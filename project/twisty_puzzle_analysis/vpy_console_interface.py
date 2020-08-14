@@ -11,7 +11,6 @@ it should be able to...
 """
 from interface_functions import *
 from interaction_modules.colored_text import colored_text
-import vpython as vpy
 from os import _exit as exit
 
 
