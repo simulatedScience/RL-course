@@ -111,15 +111,17 @@ def update_q_table(Q_table, state_history, action_history, actions, discount_fac
             print("new value:", Q_table[((1,2,0,0,1,2,0,0,0),8)])
 
 
-def get_reward(state, actions, reward_dict, max_steps=500):
+def get_reward(state, actions, reward_dict={"solved":5, "timeout":-1, "move":0.01}, max_steps=500):
     """
     return the reward for the given state and possible actions
     inputs:
     -------
-        state - ()
-        action - 
+        state - (tuple) or (list) - the state as a tuple or list
+        actions (tuple) or (list) - all possible actions in the given state
         reward_dict - (dict) - dict with specific rewards must have keys:
-            - "solved"
+            - "solved" - reward for solving the puzzle
+            - "timeout" - reward/penalty for not solving the puzzle within max_steps
+            - "move" - reward/penalty for each move
     """
     puzzle_state = puzzle_solved(state, max_steps=max_steps)
     if puzzle_state == "solved": #draw
@@ -160,21 +162,3 @@ def choose_Q_action(state, actions, Q_table, exploration_rate=0):
         return random.choice(best_actions)
     # explore environment through random move
     return random.choice(actions)
-
-
-def perform_action(state, action):
-    """
-    perform the given action on the given state in-place
-    for twisty puzzles this means applying the permutations of a move
-
-    inputs:
-        state - (list) of ints - list representing the state
-        action - (list) of lists of ints - list representing an action, here as a list of cycles
-            cycles are lists of list indices of the state list.
-    """
-    for cycle in action:
-        j = cycle[0]
-        for i in cycle:
-            state[i], state[j] = state[j], state[i]
-
-    return state

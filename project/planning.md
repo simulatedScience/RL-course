@@ -30,6 +30,9 @@ To animate the solving process of the AI it is easiest to just save the moves pe
 The integers in the array can be easily obtained by counting the number of colors in the given puzzle and enumerating them. It's best to save this mapping somewhere.
 One could also just interpret the hex-color code as a base 10 integer to get the color but that would result in unnecessarily large numbers.
 
+It should not be necessary to vary between different difficulty levels explicitly as a harder scamble also requires to solve easier ones.
+However this does depend on the state space. If there are too many possible moves in any given state, this may not be sufficient and harder scrambles may have to be alternated with easier scrambles.
+
 # AI implementation
 
 ## Choice of algorithms
