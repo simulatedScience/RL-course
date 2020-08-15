@@ -11,6 +11,7 @@ We are only considering non-bandaging puzzles for now. That means that at each p
 Additionally puzzles like the _Brain String_ cannot be represented with the following system as this is a puzzle bandaged by the maximum tension on a rubber band. In addition the knots it forms as part of the puzzle cannot be represented here.
 
 ## Data representation
+### For visualisation
 We recreate twisty puzzles as a set of points in $\mathbb{R}^3$ which are saved in an array.
 
 Each point is assigned a color and there is a specific arrangement of the colors in the array that counts as solved.
@@ -18,6 +19,16 @@ Each point is assigned a color and there is a specific arrangement of the colors
 Moves can be represented as permutations acting on this array. Any move can consist of several disjoint cycles.
 
 In practice one may think of each point as representing one color sticker on a real twisty puzzle. Although some puzzles require several points per sticker to fully describe their movement (i.e. the (geared) mixup cube).
+
+### For the AI
+The AI does not need to know where a point is in 3d space. Every possible state is uniquely defined by a list of colors which can be easily represented using integers.
+
+Performing moves (permutations) on this array of color-integers yields all the information necessary for the AI.
+
+To animate the solving process of the AI it is easiest to just save the moves performed and execute them in order. Alternatively we could map each array index to one of the points in 3d space and assign that point the color encoded by the integer.
+
+The integers in the array can be easily obtained by counting the number of colors in the given puzzle and enumerating them. It's best to save this mapping somewhere.
+One could also just interpret the hex-color code as a base 10 integer to get the color but that would result in unnecessarily large numbers.
 
 # AI implementation
 
