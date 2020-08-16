@@ -14,14 +14,13 @@ def scramble(state, actions, max_moves=30):
     returns:
     --------
         (list) - scramble described as a list of actions
-        (list) - state same as the given state variable as it is changed in-place
     """
     scramble = []
     for _ in range(max_moves):
         action_key = random.choice(actions.keys()) # choose a radom action
         perform_action(state, actions[action_key]) # perform this action
         scramble.append(action_key)                # save action to replicate the scramble
-    return scramble, state
+    return scramble
 
 
 def perform_action(state, action):

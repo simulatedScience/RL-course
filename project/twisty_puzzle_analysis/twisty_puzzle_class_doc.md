@@ -32,15 +32,22 @@ We want to show the puzzle using vpython and allow all kinds of interaction.
 
 ## for AI
 This should be a simplified, faster representation of the puzzle used for training the AI to solve the puzzle.
+### Why this should be a class
+There is a bit of puzzle-specific data that the AI needs to know to perform any action on the puzzle. This data is specified below under _Variables_.
 
+Using a class could also be used to cut down on the massive number of arguments needed to pass beteween all the learning functions.
+
+All those arguments make it quite confusing and add unnecessary length to doc-strings.
 ### Minimum information
 #### Variables
   - dictionary of all possible moves
   - a fixed _"solved"_ state - _essential for training the ai_
+    - may also be necessary to know when so stop solving the puzzle
     - this could also be changed to make a pattern on a puzzle
   - current AI data (Q-table / Network weights)
   - (current puzzle state) - _could be useful so the state doesn't need to be converted for every move. Instead every time a move is performed this variable would update_
     - keeping this in sync with the state of the animated puzzle may be difficult if the user can interfere.
+  - reward dictionary
 #### Methods
   - `train_ai` - train the AI to solve the puzzle
     - this may be split into two functions, one for pure Q-Learning and one for additional Neural Networks
