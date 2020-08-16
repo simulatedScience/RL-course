@@ -31,11 +31,11 @@ def train_q_learning(actions,
     scramble_hist = []
     exploration_rate = base_exploration_rate
     for n in range(num_episodes):
-        max_scramble_moves = ceil(n/500)
+        max_scramble_moves = ceil((1+n)/500)
         start_state = deepcopy(SOLVED_STATE)
         scramble_hist.append(scramble(start_state, actions, max_moves=max_scramble_moves))
         # play episode
-        state_hist = play_episode(start_state,
+        state_hist, action_hist = play_episode(start_state,
                                   actions,
                                   SOLVED_STATE,
                                   Q_table,
@@ -45,8 +45,8 @@ def train_q_learning(actions,
                                   learning_rate=learning_rate,
                                   reward_dict=reward_dict,
                                   N_table=N_table)
-        exploration_rate *= base_exploration_rate
-        games.append((scramble_hist[-1], state_hist))
+        exploration_rate -= base_exploration_rate/(2*num_episodes)
+        games.append((scramble_hist[-1], state_hist, action_hist))
 
     print("final exploration rate:", exploration_rate)
 
@@ -126,7 +126,7 @@ def play_episode(start_state,
     #     print("won", n_moves)
     # else:
     #     print("lost", n_moves)
-    return state_history
+    return state_history, action_history
 
 
 def update_q_table(state_history,
