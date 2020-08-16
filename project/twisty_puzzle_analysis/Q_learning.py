@@ -1,12 +1,16 @@
 import random
+from twisty_puzzle_model import scramble, perform_action
+from math import ceil
+from copy import deepcopy
 
 def train_q_learning(actions,
                      SOLVED_STATE,
                      learning_rate,
                      discount_factor,
                      base_exploration_rate,
+                     max_moves=100,
                      num_episodes=1e4,
-                     reward_dict={"win":1, "loss":-1, "draw":0, "move":-0.05}):
+                     reward_dict={"solved":5, "timeout":-1, "move":-0.01}):
     """
     play Tic Tac Toe [num_episodes] times to learn using Q-Learning with the given learning rate and discount_factor.
     inputs:
@@ -27,27 +31,30 @@ def train_q_learning(actions,
     scramble_hist = []
     exploration_rate = base_exploration_rate
     for n in range(num_episodes):
+        max_scramble_moves = ceil(n/500)
+        start_state = deepcopy(SOLVED_STATE)
+        scramble_hist.append(scramble(start_state, actions, max_moves=max_scramble_moves))
         # play episode
         state_hist = play_episode(start_state,
                                   actions,
                                   SOLVED_STATE,
                                   Q_table,
                                   exploration_rate,
-                                  max_moves=500,
+                                  max_moves=max_moves,
                                   discount_factor=discount_factor,
                                   learning_rate=learning_rate,
                                   reward_dict=reward_dict,
                                   N_table=N_table)
         exploration_rate *= base_exploration_rate
-        games.append(state_hist)
+        games.append((scramble_hist[-1], state_hist))
 
-    # print("final exploration rate:", exploration_rate)
-    
+    print("final exploration rate:", exploration_rate)
+
     return Q_table, N_table, games
 
 
 def play_episode(start_state,
-                 actions,
+                 actions_dict,
                  SOLVED_STATE,
                  Q_table,
                  exploration_rate,
@@ -83,34 +90,42 @@ def play_episode(start_state,
     state = start_state
     sign = 1
     action_history = []
-    state_history = [start_state]
+    state_history = [tuple(start_state)]
     n_moves = 0
     while n_moves <= max_moves:
         state_tuple = tuple(state)
         state_history.append(state_tuple)
+        
+        action = choose_Q_action(state_tuple,
+                                 actions_dict,
+                                 Q_table,
+                                 exploration_rate=exploration_rate)
+        action_history.append(action)
 
         if len(state_history) > 1:
             # we know the state that resulted from the last action
             update_q_table(state_history,
                            action_history,
-                           actions,
+                           actions_dict,
                            SOLVED_STATE,
                            Q_table,
-                           n_moves=n,
+                           n_moves=n_moves,
                            discount_factor=discount_factor,
                            learning_rate=learning_rate,
                            reward_dict=reward_dict,
                            max_moves=max_moves,
                            N_table=N_table)
 
-        action = choose_Q_action(state_tuple,
-                                 actions,
-                                 Q_table,
-                                 exploration_rate=exploration_rate)
-        action_history.append(action)
-        perform_action(state_tuple, action)
+        if puzzle_solved(state, SOLVED_STATE, n_moves, max_moves=max_moves) == "solved":
+            break
 
+        perform_action(state, actions_dict[action])
         n_moves += 1
+        # print(n_moves, max_moves)
+    # if puzzle_solved(state, SOLVED_STATE, n_moves, max_moves=max_moves) == "solved":
+    #     print("won", n_moves)
+    # else:
+    #     print("lost", n_moves)
     return state_history
 
 
@@ -178,6 +193,7 @@ def get_reward(state,
                                  n_moves,
                                  max_moves=max_moves)
     if puzzle_state == "solved": #draw
+        # print("won")
         reward = reward_dict["solved"]
     elif puzzle_state == "timeout":
         print("timeout")
@@ -190,7 +206,7 @@ def get_reward(state,
 def puzzle_solved(state,
                   SOLVED_STATE,
                   n_moves,
-                  max_moves=max_moves):
+                  max_moves=500):
     """
     determine the current puzzle state:
     returns:
@@ -218,17 +234,51 @@ def choose_Q_action(state, actions, Q_table, exploration_rate=0):
     if r > exploration_rate:
         # exploit knowledge
         action_values = []
-        for action in actions:
+        for action_key in actions.keys():
             try:
-                action_values.append(Q_table[(state,action)])
+                action_values.append(Q_table[(state,action_key)])
             except KeyError:
                 action_values.append(0)
         max_value = max(action_values)
         best_actions = []
-        for action, value in zip(actions, action_values):
+        for action_key, value in zip(actions, action_values):
             if value == max_value:
-                best_actions.append(action)
+                best_actions.append(action_key)
         # return random action with maximum expected reward
         return random.choice(best_actions)
     # explore environment through random move
-    return random.choice(actions)
+    return random.choice(list(actions.keys()))
+
+
+# if __name__ == "__main__":
+#     """
+#     example: floppy cube
+#     """
+#     actions = {"f" : [[20, 18], [4, 7], [16, 2], [27, 23], [17, 3]],
+#                "r" : [[2, 9], [7, 0], [18, 26], [1, 8], [23, 21]],
+#                "b" : [[26, 24], [21, 29], [9, 6], [0, 12], [11, 10]],
+#                "l" : [[16, 6], [12, 4], [15, 5], [27, 29], [20, 24]]}
+#     solved_state = [0,0,0,0,0,0,0,1,1,1,0,1,1,0,1,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5]
+#     reward_dict={"solved":5,
+#                  "timeout":-1,
+#                  "move":-0.01}
+
+#     Q_table, N_table, games = train_q_learning(actions,
+#                                                solved_state,
+#                                                learning_rate=0.1,
+#                                                discount_factor=0.99,
+#                                                base_exploration_rate=0.9999,
+#                                                num_episodes=10_000,
+#                                                reward_dict=reward_dict)
+#     def export_Q_table(Q_table, filename="Q_table.txt"):
+#         """
+#         write the given Q-table into a file
+#         """
+#         with open(filename, "w") as file:
+#             file.write("Q_table = {\n")
+#             for key, value in Q_table.items():
+#                 file.write(str(key) + ":" + str(value) + ",\n")
+#             file.write("}")
+
+#     export_Q_table(Q_table, filename="floppy_q_table.txt")
+#     # colors: 0=white 1=yellow 2=green 3=red 4=blue 5=orange
