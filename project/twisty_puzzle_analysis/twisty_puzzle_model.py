@@ -17,7 +17,7 @@ def scramble(state, actions, max_moves=30):
     """
     scramble = []
     for _ in range(max_moves):
-        action_key = random.choice(actions.keys()) # choose a radom action
+        action_key = random.choice(list(actions.keys())) # choose a radom action
         perform_action(state, actions[action_key]) # perform this action
         scramble.append(action_key)                # save action to replicate the scramble
     return scramble

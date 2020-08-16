@@ -3,4 +3,3 @@ class twisty_puzzle():
         """
         """
         self.name = "twisty_puzzle #0"
-        self.
