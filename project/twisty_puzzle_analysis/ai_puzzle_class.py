@@ -1,3 +1,8 @@
+import random
+from math import ceil
+from copy import deepcopy
+from twisty_puzzle_model import scramble, perform_action
+
 class puzzle_ai():
     def __init__(self, ACTIONS_DICT, SOLVED_STATE, reward_dict, name="twisty_puzzle #0", learning_rate=0.02, discount_factor=0.95, base_exploration_rate=0.7):
         """
@@ -14,7 +19,8 @@ class puzzle_ai():
         self.Q_table = None
         self.N_table = None
 
-    def train_q_learning(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True):
+
+    def train_q_learning(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True, max_moves=500, num_episodes=1000):
         """
         play Tic Tac Toe [num_episodes] times to learn using Q-Learning with the given learning rate and discount_factor.
         inputs:
@@ -34,32 +40,63 @@ class puzzle_ai():
                     state_history
                     action_history
         """
-        if self.Q_table == None:
-            self.Q_table = dict()    # assign values to every visited state-action pair
-        if self.N_table == None:
-            self.N_table = dict()    # counting how often each state-action pair was visited
+        self.update_settings(reward_dict=reward_dict, learning_rate=learning_rate, discount_factor=discount_factor, base_exploration_rate=base_exploration_rate, keep_Q_table=keep_Q_table)
 
         games = []
         scramble_hist = []
         exploration_rate = self.base_exploration_rate
         for n in range(num_episodes):
-            max_scramble_moves = ceil((1+n)/500)
+            max_scramble_moves = self.get_new_scramble_moves(n)
+
+            # generate a starting state
             start_state = deepcopy(self.SOLVED_STATE)
             scramble_hist.append(scramble(start_state, self.ACTIONS_DICT, max_moves=max_scramble_moves))
             # play episode
-            state_hist, action_hist = play_episode(start_state,
-                                                   max_moves=max_moves)
-            exploration_rate -= self.base_exploration_rate/(2*num_episodes)
+            state_hist, action_hist = self.play_episode(start_state, max_moves=max_moves, exploration_rate=exploration_rate)
+
+            # save results and prepare for next episode
             games.append((scramble_hist[-1], state_hist, action_hist))
+            exploration_rate = self.get_new_exploration_rate(exploration_rate, n, num_episodes)
 
         print("final exploration rate:", exploration_rate)
 
         return games
 
 
+    def update_settings(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True):
+        if reward_dict != None:
+            self.reward_dict = reward_dict
+        if learning_rate != None:
+            self.learning_rate = learning_rate
+        if discount_factor != None:
+            self.discount_factor = discount_factor
+        if base_exploration_rate != None:
+            self.base_exploration_rate = base_exploration_rate
+
+        if self.Q_table == None or not keep_Q_table: # Q_table doesn't exist yet or shall be overwritten
+            self.Q_table = dict()    # assign values to every visited state-action pair
+        if self.N_table == None or not keep_Q_table: # N_table doesn't exist yet or shall be overwritten
+            self.N_table = dict()    # counting how often each state-action pair was visited
+
+
+    def get_new_exploration_rate(self,exploration_rate, n, num_episodes):
+        """
+        function which updates the exploration rate
+        """
+        return exploration_rate - self.base_exploration_rate/(2*num_episodes)
+
+
+    def get_new_scramble_moves(self,n):
+        """
+        function which updates the number of moves for scrambling the puzzle
+        """
+        return ceil((1+n)/30)
+
+
     def play_episode(self,
                     start_state,
-                    max_moves=500):
+                    max_moves=500,
+                    exploration_rate=0):
         """
         self-play an entire episode
         inputs:
@@ -76,25 +113,24 @@ class puzzle_ai():
         state = start_state
         sign = 1
         action_history = []
-        state_history = [tuple(start_state)]
+        state_history = []
         n_moves = 0
         while n_moves <= max_moves:
             state_tuple = tuple(state)
             state_history.append(state_tuple)
-            
-            action = choose_Q_action(state_tuple,
-                                     Q_table,
-                                     exploration_rate=exploration_rate)
+
+            #choose next action based on an epsilon-greedy strategy with epsilon=exploration_rate
+            action = self.choose_Q_action(state_tuple, exploration_rate=exploration_rate)
             action_history.append(action)
 
             if len(state_history) > 1:
                 # we know the state that resulted from the last action
-                update_q_table(state_history,
+                self.update_q_table(state_history,
                                action_history,
                                n_moves=n_moves,
                                max_moves=max_moves)
 
-            if puzzle_solved(state, n_moves, max_moves=max_moves) == "solved":
+            if self.puzzle_solved(state, n_moves, max_moves=max_moves) == "solved":
                 break
 
             perform_action(state, self.ACTIONS_DICT[action])
@@ -118,29 +154,27 @@ class puzzle_ai():
             None
         """
         prev_state = state_history[-2] # S = state
-        prev_action = action_history[-1] # A = action
+        prev_action = action_history[-2] # A = action
         state = state_history[-1] # S' = next state after action A
 
-        reward = get_reward(list(state),
-                            n_moves,
-                            max_moves=max_moves) # R = Reward
+        reward = self.get_reward(list(state), n_moves, max_moves=max_moves) # R = Reward
         next_rewards = [] # Q(S', a') for all actions a'
         for action in self.ACTIONS_DICT:
             try:
-                next_rewards.append(Q_table[(state, action)])
+                next_rewards.append(self.Q_table[(state, action)])
             except KeyError:
-                Q_table[(state, action)] = 0
-                N_table[(state, action)] = 0
+                # initialize Q-values
+                self.Q_table[(state, action)] = 0
+                self.N_table[(state, action)] = 0
                 next_rewards.append(0)
-        # initialize q-value as 0
-        if not (prev_state, prev_action) in Q_table.keys():
-            print("second Q-table initialization") #debug
-            Q_table[(prev_state, prev_action)] = 0
-            N_table[(prev_state, prev_action)] = 0
+
+        if not action in self.Q_table.keys():
+            self.Q_table[(prev_state, prev_action)] = 0
+            self.N_table[(prev_state, prev_action)] = 0
         # actually update the q-value of the considered move
         # Q(S,A) += alpha*(R + gamma * max(S', a') - Q(S,A))
-        Q_table[(prev_state, prev_action)] += self.learning_rate*(reward + self.discount_factor * max(next_rewards, default=0) - Q_table[(prev_state, prev_action)])
-        N_table[(prev_state, prev_action)] += 1
+        self.Q_table[(prev_state, prev_action)] += self.learning_rate*(reward + self.discount_factor * max(next_rewards, default=0) - self.Q_table[(prev_state, prev_action)])
+        self.N_table[(prev_state, prev_action)] += 1
 
 
     def get_reward(self,
@@ -155,7 +189,7 @@ class puzzle_ai():
             n_moves - (int) - current number of moves performed
             max_moves - (int) - maximum allowed number of moves before timeout
         """
-        puzzle_state = puzzle_solved(state,
+        puzzle_state = self.puzzle_solved(state,
                                     n_moves,
                                     max_moves=max_moves)
         if puzzle_state == "solved": #draw
@@ -201,7 +235,7 @@ class puzzle_ai():
             action_values = []
             for action_key in self.ACTIONS_DICT.keys():
                 try:
-                    action_values.append(Q_table[(state,action_key)])
+                    action_values.append(self.Q_table[(state,action_key)])
                 except KeyError:
                     action_values.append(0)
             max_value = max(action_values)
