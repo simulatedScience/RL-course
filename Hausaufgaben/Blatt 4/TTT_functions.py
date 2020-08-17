@@ -54,7 +54,7 @@ def game_ended(field, get_winner=False):
     win_lists = rows + columns + diagonals
     
     if not get_winner:
-        if [1]*n in win_lists or [2]*n in win_lists:
+        if [1]*n in win_lists or [2]*n in win_lists or not 0 in field:
             return True
         return False
     else:
