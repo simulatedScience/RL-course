@@ -25,7 +25,6 @@ def train_q_learning(actions,
     """
     Q_table = dict()    # assign values to every visited state-action pair
     N_table = dict()    # counting how often each state-action pair was visited
-    action_dict = dict()    # save the possible actions for each state
 
     games = []
     scramble_hist = []

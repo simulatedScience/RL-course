@@ -56,6 +56,8 @@ def game_ended(field, get_winner=False):
     if not get_winner:
         if [1]*n in win_lists or [2]*n in win_lists or not 0 in field:
             return True
+        if not 0 in field:
+            return True
         return False
     else:
         if [1]*n in win_lists:
