@@ -56,7 +56,7 @@ def interface_import(filepath, history_dict, command_color="#ff8800", arg_color=
         history_dict["vpy_objects"] = vpy_objects
         history_dict["canvas"] = canvas
         # deepcopy of correct point positions for snapping
-        history_dict["POINT_POS"] = [vpy.vec(obj.pos) for obj in vpy_objects]
+        history_dict["POINT_POS"] = [vpy.vec(obj.pos) for obj in vpy_objects] # list of vpython vectors representing the correct point positions
         history_dict["puzzle_com"] = vpy.vec(0, 0, 0)
         print(f"successfully imported {colored(filepath, arg_color)}")
     except ValueError:

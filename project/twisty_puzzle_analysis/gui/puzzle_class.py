@@ -1,23 +1,28 @@
 """
 a class for storing information about twisty puzzles
 """
+import time
 import vpython as vpy
-
+from twisty_puzzle_model import scramble, perform_action
 
 class twisty_puzzle():
     def __init__(self):
         self.moves = []
         self.COM = COM                         # vpython vector - center of mass of 3d points
         self.POINT_POSITIONS = POINT_POSITIONS # list of vpython vectors - correct position of 3d points
-        self.DEFAULT_POSITIONS = [vpy.vec(vec) for vec in POINT_POSITIONS]
+        # self.SOLVED_STATE = [vpy.vec(vec) for vec in POINT_POSITIONS]
         self.current_state = [] # list of vpython objects - current state of the puzzle in animation
         self.movecreator_mode = False
 
 
-    def perform_move(self, move):
+    def perform_move(self, moves, sleep_time=0.1):
         """
         perform the given move on the puzzle self
+        if multiple moves are given, they are all executed
         """
+        if ' ' in moves:
+            for move in moves.split(' '):
+                self.perform_move(move, sleep_time=sleep_time)
 
 
     def snap(self, shape):
@@ -42,6 +47,13 @@ class twisty_puzzle():
         inputs:
         -------
             max_moves - (int) - the number of random moves
+        """
+        scramble_hist = scramble(self.current_state, max_moves=max_moves)
+
+
+    def reset_to_solved(self):
+        """
+        resets the puzzle to a solved state
         """
 
 

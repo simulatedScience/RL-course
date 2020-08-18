@@ -31,7 +31,7 @@ def main_interaction():
         - 'help'                       - print this overview
         - 'exit'                       - close program
         - 'savepuzzle' [puzzlename]    - save the current puzzle into a file 'puzzledefinition.xml' or for now .txt
-        - 'loadmoves' [filepath]       - load moves from a given file
+        - 'loadpuzzle' [puzzlename]       - load puzzle from a given file
         - 'rename' [oldname] [newname] - rename a move
         - 'delmove' [movename]         - delete the given move
         - 'closepuzzle'                - close the current puzzle animation
