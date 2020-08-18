@@ -4,7 +4,7 @@ methods to perform and animate rotations on a list of points
 import vpython as vpy
 import time
 
-def make_move(points, cycles, POINT_POS, PUZZLE_COM, anim_steps=45):
+def make_move(points, cycles, POINT_POS, PUZZLE_COM, sleep_time=5e-3, anim_steps=45):
     """
     applies a move given as several cycles to the given points
 
@@ -25,7 +25,7 @@ def make_move(points, cycles, POINT_POS, PUZZLE_COM, anim_steps=45):
         move_points += cycle_points
         rot_info_list += rot_info
     
-    apply_rotation(move_points, rot_info_list, anim_steps=anim_steps)
+    apply_rotation(move_points, rot_info_list, sleep_time=sleep_time, anim_steps=anim_steps)
 
     for cycle in cycles:
         apply_cycle(points, cycle)

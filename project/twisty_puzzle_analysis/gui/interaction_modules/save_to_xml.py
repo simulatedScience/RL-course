@@ -28,9 +28,10 @@ def save_to_xml(puzzle):
         creates a folder 'puzzlename' and in it a file 'puzzledefinition.xml'
             containing all important puzzle information
     """
-    root_elem = let.Element("puzzledefinition", name=puzzle.puzzle_name)
+    puzzle_name = puzzle.PUZZLE_NAME
+    root_elem = let.Element("puzzledefinition", name=puzzle_name)
     root_elem.tail = "\n\t"
-    save_points(root_elem, puzzle.point_info_dicts)
+    save_points(root_elem, puzzle.POINT_INFO_DICTS)
     try:
         save_moves(root_elem, puzzle.moves)
     except KeyError:
@@ -40,7 +41,7 @@ def save_to_xml(puzzle):
     except FileExistsError:
         pass
     try:
-        os.mkdir(os.path.join("puzzles", puzzlename))
+        os.mkdir(os.path.join("puzzles", puzzle_name))
     except FileExistsError:
         pass
     puzzle_tree = let.ElementTree(root_elem)
@@ -48,7 +49,7 @@ def save_to_xml(puzzle):
                               pretty_print=True,
                               xml_declaration=True,
                               encoding='UTF-8')
-    with open(os.path.join("puzzles", puzzlename, "puzzle_definition.xml"), "wb") as file:
+    with open(os.path.join("puzzles", puzzle_name, "puzzle_definition.xml"), "wb") as file:
         file.write(xml_string)
     # puzzle_tree.write(os.path.join(puzzlename, "puzzle_definition.xml"))
 

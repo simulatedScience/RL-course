@@ -9,9 +9,10 @@ it should be able to...
     - provide output option for moves   # done
     - perform animated moves            # done
 """
-from interface_functions import *
-from interaction_modules.colored_text import colored_text
 from os import _exit as exit
+from interaction_modules.colored_text import colored_text
+from interface_functions import *
+from puzzle_class import Twisty_Puzzle
 
 
 def main_interaction():
@@ -40,7 +41,7 @@ def main_interaction():
     argument_color = "#5588ff"
     user_input = ""
 
-    history_dict = {"movecreator": False}
+    puzzle = Twisty_Puzzle()
     n = 0
 
     while user_input.lower() != "exit":
@@ -65,7 +66,7 @@ def main_interaction():
                         "closepuzzle": interface_closepuzzle}
 
         if validate_command(command_dict, user_input):
-            run_command(command_dict, user_input, history_dict,
+            run_command(command_dict, user_input, puzzle,
                         command_color, argument_color)
 
 
@@ -86,6 +87,61 @@ def validate_command(command_dict, user_input):
     if not input_list[0].lower() in command_dict.keys():
         return False
     return True
+
+
+def run_command(command_dict, user_input, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    execute a given command
+
+    inputs:
+    -------
+        user_input - (str) - string representing a valid command
+
+    returns:
+    --------
+        None
+    """
+    command = user_input.split(" ")[0]
+
+    if command in ["import", "snap", "newmove", "move", "printmove", "savepuzzle", "loadpuzzle", "rename", "delmove"]:
+        try:
+            user_arguments = user_input[len(command)+1:]
+            print(
+                f"executing {colored(command, command_color)} {colored(user_arguments, arg_color)} ...")
+        except IndexError:
+            print(
+                f"{colored('Error:', error_color)} {colored(command, command_color)} requires additional options.")
+        command_dict[command](user_arguments,
+                              puzzle,
+                              command_color=command_color,
+                              arg_color=arg_color,
+                              error_color=error_color)
+    else:
+        command_dict[command](puzzle,
+                              command_color=command_color,
+                              arg_color=arg_color,
+                              error_color=error_color)
+
+
+def interface_closepuzzle(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    close the current puzzle and reset history_dict
+    """
+    save_answer = ""
+    while not save_answer in ["y", "n"]:
+        save_answer = input("save current puzzle before closing? (y/n) ")
+        if save_answer.lower() == "y":
+            if puzzle.PUZZLE_NAME == None:
+                puzzlename = ' '
+                while ' ' in puzzlename:
+                    puzzlename = input("Enter a name without spaces to save the puzzle: ")
+            puzzle.save_puzzle(puzzlename)
+            print(f"saved puzzle as {colored(puzzlename, arg_color)}")
+        try:
+            puzzle.canvas.delete()
+        except:
+            pass
+        main_interaction()
 
 
 if __name__ == "__main__":
