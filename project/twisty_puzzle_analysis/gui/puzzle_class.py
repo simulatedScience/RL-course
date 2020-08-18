@@ -2,24 +2,37 @@
 a class for storing information about twisty puzzles
 """
 import time
+from copy import deepcopy
 import vpython as vpy
+
 from twisty_puzzle_model import scramble, perform_action
 
-class twisty_puzzle():
+import ggb_import.ggb_to_vpy as ggb_vpy
+
+from interaction_modules.colored_text import colored_text as colored
+from interaction_modules.save_to_xml import save_to_xml
+from interaction_modules.load_from_xml import load_puzzle
+
+from vpython_modules.create_canvas import create_canvas
+from vpython_modules.vpy_rotation import get_com, make_move
+from vpython_modules.cycle_input import bind_click
+
+from shape_snapping import snap_to_cube, snap_to_sphere
+
+
+class Twisty_Puzzle():
     def __init__(self):
-        self.puzzle_name = None
+        self.PUZZLE_NAME = None
 
         self.POINT_POSITIONS = [] # list of vpython vectors - correct position of 3d points
         self.SOLVED_STATE = [] # list of vpython vectors - correct colors of 3d points
         self.POINT_INFO_DICTS = []
         self.COM = None # vpython vector - center of mass of 3d points
         self.vpy_objects = [] # list of vpython objects - current state of the puzzle in animation
-        self.animation_speed = 5e-3
+        self.sleep_time = 5e-3
         self.canvas = None
         self.moves = dict() # dcitionary containing all moves for the puzzle
         self.movecreator_mode = False
-        # self.POINT_POSITIONS = [point["coords"] for point in point_dicts]
-        # self.SOLVED_STATE = [point["color"] for point in point_dicts]
 
 
     def snap(self, shape):
@@ -37,17 +50,31 @@ class twisty_puzzle():
         try:
             self.snap_obj.visible = False
         except AttributeError:
-            pass
+            self.snap_obj = None
         except NameError: # define self.snap_obj
             self.snap_obj = None
         if shape == "r" or shape == "reset":
-            self.reset_to_solved()
+            self.reset_point_positions()
         elif shape == "c" or shape =="cube":
             if not isinstance(self.snap_obj, vpy.box):
                 self.snap_obj = snap_to_cube(self.vpy_objects, show_cube=True)
         elif shape == "s" or shape =="sphere":
             if not isinstance(self.snap_obj, vpy.sphere):
-                self.snap_obj = snap_to_sphere(self.vpy_objects, show_cube=True)
+                self.snap_obj = snap_to_sphere(self.vpy_objects, show_sphere=True)
+        self.POINT_POSITIONS = [vpy.vec(obj.pos) for obj in self.vpy_objects]
+
+
+    def reset_point_positions(self):
+        """
+        resets the point positions to their initial position
+        """
+        for point_dict, obj in zip(self.POINT_INFO_DICTS, self.vpy_objects):
+            obj.pos = point_dict["coords"]
+        try:
+            self.snap_obj.visible = False
+            self.snap_obj = None
+        except:
+            self.snap_obj = None
 
 
     def scramble(self, max_moves=30):
@@ -64,7 +91,7 @@ class twisty_puzzle():
 
     def reset_to_solved(self):
         """
-        resets the puzzle to a solved state
+        resets the puzzle colors to a solved state
         """
         for color, obj in zip(self.SOLVED_STATE, self.vpy_objects):
             obj.color = color
@@ -77,13 +104,12 @@ class twisty_puzzle():
 
         inputs:
         -------
-            moves - (str) - 
-
+            moves - (str) - a single move or several seperated by spaces
         """
         if ' ' in moves:
             for move in moves.split(' '):
                 self.perform_move(move)
-                time.sleep(100*self.sleep_time)
+                time.sleep(50*self.sleep_time)
         else:
             # make_move also permutes the vpy_objects
             make_move(self.vpy_objects,
@@ -91,7 +117,7 @@ class twisty_puzzle():
                       self.POINT_POSITIONS,
                       self.COM,
                       sleep_time=self.sleep_time,
-                      anim_steps=anim_steps)
+                      anim_steps=45)
 
 
     def newmove(self, movename):
@@ -110,12 +136,12 @@ class twisty_puzzle():
         self.active_move_cycles = []
         self.active_arrows = []
         self.on_click_function = bind_click(self.canvas,
-                                            self.active_cycle_list,
+                                            self.active_move_cycles,
                                             self.vpy_objects,
-                                            self.active_arrow)
+                                            self.active_arrows)
 
 
-    def end_movecreation(self):
+    def end_movecreation(self, arg_color="#0066ff", add_inverse=True):
         """
         exit movecreator mode and save the last move
         """
@@ -124,14 +150,18 @@ class twisty_puzzle():
             for arrow in self.active_arrows: #hide all arrows showing the move
                 arrow.visible = False
             del(self.active_arrows)
-        except NameError:
+        except AttributeError:
             pass
         self.moves[self.active_move_name] = deepcopy(self.active_move_cycles)
-        # prepare for adding inverse move:
-        self.inverse_cycles(self.active_move_cycles)
-        self.active_move_name = self.active_move_name[:-1] \
-            if "'" == self.active_move_name[-1] else self.active_move_name + "'"
-        self.end_movecreation() # add inverse move
+
+        print(f"saved move {colored(self.active_move_name, arg_color)}.")
+        if add_inverse:
+            # prepare for adding inverse move:
+            self.inverse_cycles(self.active_move_cycles)
+            self.active_move_name = self.active_move_name[:-1] \
+                if "'" == self.active_move_name[-1] else self.active_move_name + "'"
+            self.end_movecreation(arg_color=arg_color, add_inverse=False) # add inverse move
+
 
 
     def inverse_cycles(self, cycle_list):
@@ -177,26 +207,55 @@ class twisty_puzzle():
             puzzle_name - (str) - name of the puzzle
                 must not include spaces or other invalid characters for filenames
         """
-        self.puzzle_name = puzzle_name
+        self.PUZZLE_NAME = puzzle_name
         save_to_xml(self)
 
 
     def load_puzzle(self, puzzle_name):
         """
         load the given puzzle from a .xml file
+        set all important class variables accordingly
 
         inputs:
         -------
             puzzle_name - (str) - name of the puzzle
                 must not include spaces or other invalid characters for filenames
         """
-        # TODO
+        self.POINT_INFO_DICTS, self.moves = load_puzzle(puzzle_name)
+        self.canvas = create_canvas()
+        self.vpy_objects = ggb_vpy.draw_points(self.POINT_INFO_DICTS)
+
+        self.POINT_POSITIONS = [point["coords"] for point in self.POINT_INFO_DICTS]
+        self.SOLVED_STATE = [point["vpy_color"] for point in self.POINT_INFO_DICTS]
+        self.COM = get_com(self.vpy_objects)
+        self.PUZZLE_NAME = puzzle_name
 
     
     def import_puzzle(self, filepath):
         """
+        imports a puzzle from a given .ggb (Geogebra) file
+        The puzzle will automatically be centered around the origin.
+
+        inputs:
+        -------
+            filepath - (str) - path to a .ggb file represeting a puzzle
         """
-        # TODO
+        try:
+            self.POINT_INFO_DICTS = ggb_vpy.get_point_dicts(filepath)
+        except FileNotFoundError:
+            self.POINT_INFO_DICTS = ggb_vpy.get_point_dicts(filepath+".ggb")
+        self.COM = get_com(self.vpy_objects)
+        self.canvas = create_canvas()
+        # draw_points also converts coords in dictionaries to vpython vectors
+        self.vpy_objects = ggb_vpy.draw_points(self.POINT_INFO_DICTS)
+
+        if not self.COM.abs < 1e-10:
+            for point_dict, obj in zip(self.POINT_INFO_DICTS, self.vpy_objects):
+                obj.pos -= self.COM
+                point_dict["coords"] -= self.COM
+
+        self.POINT_POSITIONS = [point["coords"] for point in self.POINT_INFO_DICTS]
+        self.SOLVED_STATE = [point["color"] for point in self.POINT_INFO_DICTS]
 
 
     def listmoves(self, arg_color="#0066ff"):
@@ -204,10 +263,9 @@ class twisty_puzzle():
         print all availiable moves for this puzzle
         if every move has an inverse: don't print the inverse moves
         """
-        print(f"the puzzle {colored(self.name, arg_color)} is defined with the following moves:")
+        print(f"the puzzle {colored(self.PUZZLE_NAME, arg_color)} is defined with the following moves:")
         for movename in self.moves.keys():
-            self.printmove(movename,
-                           history_dict=history_dict,
+            self.print_move(movename,
                            arg_color=arg_color)
 
 
@@ -215,6 +273,6 @@ class twisty_puzzle():
         """
         print the given move
         """
-        print(f"{colored(movename, arg_color)} is defined by the cycles", cycle_list)
+        print(f"{colored(move_name, arg_color)} is defined by the cycles", self.moves[move_name])
 
 
