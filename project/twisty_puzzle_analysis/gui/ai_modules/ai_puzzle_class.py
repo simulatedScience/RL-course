@@ -6,6 +6,22 @@ from twisty_puzzle_model import scramble, perform_action
 class puzzle_ai():
     def __init__(self, ACTIONS_DICT, SOLVED_STATE, reward_dict, name="twisty_puzzle #0", learning_rate=0.02, discount_factor=0.95, base_exploration_rate=0.7):
         """
+        initialize a puzzle for ai training
+
+        inputs:
+        -------
+            ACTIONS_DICT - (dict) - dictionary containing all possible actions as cycles
+                keys are the names of the actions
+            SOLVED_STATE - (list) of ints - the solved state. Each integer represents one color
+            reward_dict - (dict) - dict containing rewards for certain events must have keys:
+                - "solved" - reward for solving the puzzle
+                - "timeout" - reward/penalty for not solving the puzzle within max_steps
+                - "move" - reward/penalty for each move
+            name - (str) - name of the puzzle
+            learning_rate - (float) in range [0,1] - alpha
+            discount_factor - (float) in range [0,1] - gamma
+            base_exploration_rate - (float) - the starting exploration rate
+
         """
         self.name = name
         self.ACTIONS_DICT = ACTIONS_DICT
@@ -23,7 +39,9 @@ class puzzle_ai():
     def train_q_learning(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True, max_moves=500, num_episodes=1000):
         """
         play Tic Tac Toe [num_episodes] times to learn using Q-Learning with the given learning rate and discount_factor.
+
         inputs:
+        -------
             learning_rate - (float) in range [0,1] - alpha
             discount_factor - (float) in range [0,1] - gamma
             base_exploration_rate - (float) - the starting exploration rate
@@ -33,12 +51,14 @@ class puzzle_ai():
                 - "timeout" - reward/penalty for not solving the puzzle within max_steps
                 - "move" - reward/penalty for each move
             keep_Q_table - (bool) - whether or not to keep the existing Q-table or retrain the AI from scratch
+
         returns:
+        --------
             (list) or tuples - information about the training games:
-                tuples include: 
-                    scrambles
-                    state_history
-                    action_history
+                tuples include:
+                    scramble - list of movenames
+                    state_history - list of states in ai-format
+                    action_history - list of movenames
         """
         self.update_settings(reward_dict=reward_dict, learning_rate=learning_rate, discount_factor=discount_factor, base_exploration_rate=base_exploration_rate, keep_Q_table=keep_Q_table)
 
@@ -64,6 +84,20 @@ class puzzle_ai():
 
 
     def update_settings(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True):
+        """
+        update important class variables before training
+
+        inputs:
+        -------
+            learning_rate - (float) in range [0,1] - alpha
+            discount_factor - (float) in range [0,1] - gamma
+            base_exploration_rate - (float) - the starting exploration rate
+            reward_dict - (dict) - dict containing rewards for certain events must have keys:
+                - "solved" - reward for solving the puzzle
+                - "timeout" - reward/penalty for not solving the puzzle within max_steps
+                - "move" - reward/penalty for each move
+            keep_Q_table - (bool) - whether or not to keep the existing Q-table or retrain the AI from scratch
+        """
         if reward_dict != None:
             self.reward_dict = reward_dict
         if learning_rate != None:

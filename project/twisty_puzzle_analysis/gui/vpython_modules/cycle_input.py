@@ -79,7 +79,6 @@ def on_click(canvas, selected_objects, cycle_list, object_list, arrow_list):
             selected_objects.clear()
 
 
-
 def bind_click(canvas, cycle_list, object_list, arrow_list):
     """
     bind the mousedown event on the given canvas to the onClick function
