@@ -6,7 +6,7 @@ import time
 
 def make_move(points, cycles, POINT_POS, PUZZLE_COM, anim_steps=45):
     """
-    applies a move to the given 'points' given as several disjoint cycles
+    applies a move given as several cycles to the given points
 
     inputs:
     -------
@@ -14,9 +14,9 @@ def make_move(points, cycles, POINT_POS, PUZZLE_COM, anim_steps=45):
         cycle - (list) - list of indeces for the list of points in cycle notation
             e.g. (0,1,2) means the permutation 0->1->2->0
 
-    returns:
+    outputs:
     --------
-        None
+        the cycles are applied to points, permuting the objects in there.
     """
     move_points = []
     rot_info_list = []
@@ -96,7 +96,7 @@ def calc_rotate_pair(point_A, point_B, com, PUZZLE_COM=vpy.vec(0, 0, 0)):
     return angle, axis, com
 
 
-def apply_rotation(cycle_points, rot_info_list, anim_steps=45):
+def apply_rotation(cycle_points, rot_info_list, sleep_time=5e-3, anim_steps=45):
     """
     animate the rotation of all points in 'cycle_points' as specified in 'rot_info_list'.
         the animation contains 'anim_steps' frames
@@ -144,10 +144,8 @@ def apply_cycle(points, cycle):
         changes the list 'points' in-place by applying the permutation
     """
     j = cycle[0]
-    # for i, j in zip(cycle[1:], cycle[:-1]):
     for i in cycle:
-        # swap points i and j
-        points[i], points[j] = points[j], points[i]
+        points[i], points[j] = points[j], points[i] # swap points i and j
 
 
 def correct_positions(points, positions, cycle=None):

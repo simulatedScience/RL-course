@@ -182,7 +182,7 @@ def run_savepuzzle(puzzlename, puzzle_info_dict, arg_color="#0066ff"):
     save_to_xml(puzzlename, puzzle_info_dict)
 
 
-def run_move(object_list, cycle_list, POINT_POS, PUZZLE_COM, anim_steps=45):
+def run_move(object_list, cycle_list, POINT_POS, PUZZLE_COM, sleep_time=5e-3, anim_steps=45):
     """
     perform the given move
 
@@ -205,7 +205,7 @@ def run_move(object_list, cycle_list, POINT_POS, PUZZLE_COM, anim_steps=45):
         permutes the objects in object_list to represent the position changes
         animate move
     """
-    make_move(object_list, cycle_list, POINT_POS, PUZZLE_COM, anim_steps=anim_steps)
+    make_move(object_list, cycle_list, POINT_POS, PUZZLE_COM, sleep_time=sleep_time, anim_steps=anim_steps)
 
 
 def run_help(command_color="#ff8800", arg_color="#0055cc"):

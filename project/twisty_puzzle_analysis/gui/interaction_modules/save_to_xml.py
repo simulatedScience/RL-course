@@ -6,7 +6,7 @@ import lxml.etree as let
 import os
 
 
-def save_to_xml(puzzlename, puzzle_info_dict):
+def save_to_xml(puzzle):
     """
     saves the puzzle defined in 'puzzle_info_dict' in a file 'puzzle_definition.xml'
 
@@ -28,11 +28,11 @@ def save_to_xml(puzzlename, puzzle_info_dict):
         creates a folder 'puzzlename' and in it a file 'puzzledefinition.xml'
             containing all important puzzle information
     """
-    root_elem = let.Element("puzzledefinition", name=puzzlename)
+    root_elem = let.Element("puzzledefinition", name=puzzle.puzzle_name)
     root_elem.tail = "\n\t"
-    save_points(root_elem, puzzle_info_dict["point_dicts"])
+    save_points(root_elem, puzzle.point_info_dicts)
     try:
-        save_moves(root_elem, puzzle_info_dict["moves"])
+        save_moves(root_elem, puzzle.moves)
     except KeyError:
         pass
     try:

@@ -28,7 +28,7 @@
   - start Neural Network training via `train_NN`
 
 ## AI Class
-Are these seperate classes for Neural Networks and Q-Learning? If so, how exactl do they relate?
+Are these seperate classes for Neural Networks and Q-Learning? If so, how exactly do they relate?
 
 ### Tasks
 - stores information about the Q-table
