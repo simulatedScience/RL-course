@@ -153,7 +153,7 @@ def run_printmove(movename, cycle_list, arg_color="#0066ff"):
     """
     prints the given move as it's cycles
     """
-    print(f"{colored(movename, arg_color)} is defined by the cycles", *cycle_list)
+    print(f"{colored(movename, arg_color)} is defined by the cycles", cycle_list)
 
 
 def run_savepuzzle(puzzlename, puzzle_info_dict, arg_color="#0066ff"):

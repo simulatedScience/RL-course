@@ -151,10 +151,9 @@ def interface_move(movename, history_dict, command_color="#ff8800", arg_color="#
  Create a move using {colored('newmove', command_color)}.")
 
 
-def interface_printmove(movename, history_dict, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+def interface_printmove(movename, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
     try:
-        run_printmove(
-            movename, history_dict["moves"][movename], arg_color=arg_color)
+        puzzle.print_move(movename, arg_color=arg_color)
     except KeyError:
         print(f"{colored('Error:', error_color)} move '{colored(movename, arg_color)}' does not exist yet. Create a move using {colored('newmove', command_color)}.")
 
@@ -186,16 +185,11 @@ def interface_loadpuzzle(puzzlename, history_dict, command_color="#ff8800", arg_
         print(f"{colored('Errod:', error_color)} Puzzle file does not exist yet. Create necessary files with {colored('savepuzzle', command_color)}")
 
 
-def interface_listmoves(history_dict, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
-    for movename in history_dict["moves"].keys():
-        interface_printmove(movename,
-                            history_dict=history_dict,
-                            command_color=command_color,
-                            arg_color=arg_color,
-                            error_color=error_color)
+def interface_listmoves(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    puzzle.listmoves(arg_color=arg_color)
 
 
-def interface_rename(user_input, history_dict, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+def interface_rename(user_input, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
     """
     renames the move given in user_input
 
@@ -204,19 +198,21 @@ def interface_rename(user_input, history_dict, command_color="#ff8800", arg_colo
         user_input - (str) - two movenames, old and new seperated by a space
     """
     old_name, new_name = user_input.split(" ")
-    history_dict["moves"][new_name] = history_dict["moves"][old_name]
-    del(history_dict["moves"][old_name])
+    try:
+        puzzle.rename(old_name, new_name)
+    except KeyError:
+        print(f"{colored('Error:', error_color)} Move {colored(old_name, arg_color)} does not exist.")
 
 
-def interface_delmove(movename, history_dict, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+def interface_delmove(move_name, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
     """
     deletes the given move from the 'history_dict'
     """
     try:
-        del(history_dict["moves"][movename])
-        print(f"successfully delted the move {colored(movename, arg_color)}.")
-    except:
-        print(f"{colored('Error:', error_color)} Move does not exist.")
+        puzzle.del_move(move_name)
+        print(f"delted the move {colored(movename, arg_color)}.")
+    except KeyError:
+        print(f"{colored('Error:', error_color)} Move {colored(move_name, arg_color)} does not exist.")
 
 
 def interface_closepuzzle(history_dict, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
@@ -234,8 +230,8 @@ def interface_closepuzzle(history_dict, command_color="#ff8800", arg_color="#558
                                      arg_color=arg_color,
                                      error_color=error_color)
             except KeyError:
-                puzzlename = " "
-                while " " in puzzlename:
+                puzzlename = ' '
+                while ' ' in puzzlename:
                     puzzlename = input("Enter a name without spaces to save the puzzle: ")
                 interface_savepuzzle(puzzlename,
                                      history_dict,
