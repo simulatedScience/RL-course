@@ -3,7 +3,7 @@ This module provides methods to snap a set of points to different shapes.
 At first there will only be a sphere and a cube implemented.
 """
 import vpython as vpy
-import ggb_import.ggb_to_vpy as ggb_vpy
+from .ggb_import import ggb_to_vpy as ggb_vpy
 
 def snap_to_sphere(points, radius=1, show_sphere=True):
     """

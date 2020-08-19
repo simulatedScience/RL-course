@@ -3,8 +3,8 @@ This module provides methods to load points
     from a .ggb file and display them in vpython
 """
 import vpython as vpy
-import ggb_import.ggb_to_python as ggb_py
-import ggb_import.xml_point_info as xml_point
+from . import ggb_to_python as ggb_py
+from . import xml_point_info as xml_point
 
 def get_point_dicts(filepath, new_path = "."):
     """

@@ -5,19 +5,19 @@ import time
 from copy import deepcopy
 import vpython as vpy
 
-import ggb_import.ggb_to_vpy as ggb_vpy
+from .ggb_import.ggb_to_vpy import draw_points
 
-from interaction_modules.colored_text import colored_text as colored
-from interaction_modules.save_to_xml import save_to_xml
-from interaction_modules.load_from_xml import load_puzzle
+from .interaction_modules.colored_text import colored_text as colored
+from .interaction_modules.save_to_xml import save_to_xml
+from .interaction_modules.load_from_xml import load_puzzle
 
-from vpython_modules.create_canvas import create_canvas
-from vpython_modules.vpy_rotation import get_com, make_move
-from vpython_modules.cycle_input import bind_click
+from .vpython_modules.create_canvas import create_canvas
+from .vpython_modules.vpy_rotation import get_com, make_move
+from .vpython_modules.cycle_input import bind_click
 
-from shape_snapping import snap_to_cube, snap_to_sphere
+from .shape_snapping import snap_to_cube, snap_to_sphere
 
-from ai_modules.twisty_puzzle_model import scramble, perform_action
+from .ai_modules.twisty_puzzle_model import scramble, perform_action
 
 
 class Twisty_Puzzle():
@@ -224,7 +224,7 @@ class Twisty_Puzzle():
         """
         self.POINT_INFO_DICTS, self.moves = load_puzzle(puzzle_name)
         self.canvas = create_canvas()
-        self.vpy_objects = ggb_vpy.draw_points(self.POINT_INFO_DICTS)
+        self.vpy_objects = draw_points(self.POINT_INFO_DICTS)
 
         self.POINT_POSITIONS = [point["coords"] for point in self.POINT_INFO_DICTS]
         self.SOLVED_STATE = [point["vpy_color"] for point in self.POINT_INFO_DICTS]
@@ -248,7 +248,7 @@ class Twisty_Puzzle():
         self.COM = get_com(self.vpy_objects)
         self.canvas = create_canvas()
         # draw_points also converts coords in dictionaries to vpython vectors
-        self.vpy_objects = ggb_vpy.draw_points(self.POINT_INFO_DICTS)
+        self.vpy_objects = draw_points(self.POINT_INFO_DICTS)
 
         if not self.COM.abs < 1e-10:
             for point_dict, obj in zip(self.POINT_INFO_DICTS, self.vpy_objects):

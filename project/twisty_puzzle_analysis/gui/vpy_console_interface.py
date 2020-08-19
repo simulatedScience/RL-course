@@ -10,9 +10,9 @@ it should be able to...
     - perform animated moves            # done
 """
 from os import _exit as exit
-from interaction_modules.colored_text import colored_text as colored
+from .interaction_modules.colored_text import colored_text as colored
 from interface_functions import *
-from puzzle_class import Twisty_Puzzle
+from .puzzle_class import Twisty_Puzzle
 
 
 def main_interaction():
