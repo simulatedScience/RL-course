@@ -8,7 +8,7 @@ def state_for_ai(vpy_vectors):
 
     inputs:
     -------
-        vpy_objects - (list) of vpython objects - a list of vpython objects
+        vpy_vectors - (list) of vpython vectors - a list of vpython vectors representing colors in the puzzle
 
     returns:
     --------
