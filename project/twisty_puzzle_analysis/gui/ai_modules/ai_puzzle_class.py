@@ -1,7 +1,7 @@
 import random
 from math import ceil
 from copy import deepcopy
-from twisty_puzzle_model import scramble, perform_action
+from .twisty_puzzle_model import scramble, perform_action
 
 class puzzle_ai():
     def __init__(self, ACTIONS_DICT, SOLVED_STATE, reward_dict={"solved":10, "timeout":-1, "move":-0.2}, name="twisty_puzzle #0", learning_rate=0.02, discount_factor=0.95, base_exploration_rate=0.7):

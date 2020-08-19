@@ -3,7 +3,7 @@ interface methods
 """
 import time
 import vpython as vpy
-from interaction_modules.colored_text import colored_text
+from .interaction_modules.colored_text import colored_text
 # from interaction_modules.methods import *
 
 

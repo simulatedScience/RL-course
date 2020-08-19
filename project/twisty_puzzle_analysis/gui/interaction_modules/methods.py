@@ -1,16 +1,16 @@
 from copy import deepcopy
 import vpython as vpy
 
-from interaction_modules.colored_text import colored_text as colored
-from interaction_modules.save_to_xml import save_to_xml
-from interaction_modules.load_from_xml import load_puzzle
+from .colored_text import colored_text as colored
+from .save_to_xml import save_to_xml
+from .load_from_xml import load_puzzle
 
-import ggb_import.ggb_to_vpy as ggb_vpy
+from ..ggb_import import ggb_to_vpy as ggb_vpy
 
-from shape_snapping import snap_to_cube, snap_to_sphere
-from vpython_modules.create_canvas import create_canvas
-from vpython_modules.vpy_rotation import get_com, make_move
-from vpython_modules.cycle_input import bind_click, on_click
+from ..shape_snapping import snap_to_cube, snap_to_sphere
+from ..vpython_modules.create_canvas import create_canvas
+from ..vpython_modules.vpy_rotation import get_com, make_move
+from ..vpython_modules.cycle_input import bind_click, on_click
 
 
 def run_import(filepath):
