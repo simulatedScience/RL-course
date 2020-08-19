@@ -41,7 +41,7 @@ def save_to_xml(puzzle):
     except FileExistsError:
         pass
     try:
-        os.mkdir(os.path.join("puzzles", puzzle_name))
+        os.mkdir(os.path.join("puzzles", puzzlename))
     except FileExistsError:
         pass
     puzzle_tree = let.ElementTree(root_elem)
@@ -49,7 +49,7 @@ def save_to_xml(puzzle):
                               pretty_print=True,
                               xml_declaration=True,
                               encoding='UTF-8')
-    with open(os.path.join("puzzles", puzzle_name, "puzzle_definition.xml"), "wb") as file:
+    with open(os.path.join(os.path.dirname(__file__), "..", "puzzles", puzzlename, "puzzle_definition.xml"), "wb") as file:
         file.write(xml_string)
     # puzzle_tree.write(os.path.join(puzzlename, "puzzle_definition.xml"))
 

@@ -19,7 +19,7 @@ def load_puzzle(puzzlename):
         (dict) - dict of moves with movenames as keys and 
             list of lists of ints as cycles
     """
-    with open(os.path.join("puzzles", puzzlename, "puzzle_definition.xml")) as puzzle_file:
+    with open(os.path.join(os.path.dirname(__file__), "..", "puzzles", puzzlename, "puzzle_definition.xml")) as puzzle_file:
         puzzle_tree = ET.parse(puzzle_file)
     point_dicts = get_points(puzzle_tree)
     moves_dict = get_moves(puzzle_tree)
