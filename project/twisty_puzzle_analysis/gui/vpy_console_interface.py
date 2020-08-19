@@ -10,7 +10,7 @@ it should be able to...
     - perform animated moves            # done
 """
 from os import _exit as exit
-from interaction_modules.colored_text import colored_text
+from interaction_modules.colored_text import colored_text as colored
 from interface_functions import *
 from puzzle_class import Twisty_Puzzle
 
@@ -31,11 +31,13 @@ def main_interaction():
         - 'printmove' [movename]       - print all cycles of the given move
         - 'help'                       - print this overview
         - 'exit'                       - close program
-        - 'savepuzzle' [puzzlename]    - save the current puzzle into a file 'puzzledefinition.xml' or for now .txt
-        - 'loadpuzzle' [puzzlename]       - load puzzle from a given file
+        - 'savepuzzle' [puzzlename]    - save the current puzzle into a file 'puzzledefinition.xml'
+        - 'loadpuzzle' [puzzlename]    - load puzzle from a given file
         - 'rename' [oldname] [newname] - rename a move
         - 'delmove' [movename]         - delete the given move
         - 'closepuzzle'                - close the current puzzle animation
+        - 'sleeptime' [time]           - change the sleep time to change animation speed (default: 5e-3)
+        - 'scramble' [max_moves]       - scramble the puzzle randomly
     """
     command_color = "#ff8800"
     argument_color = "#5588ff"
@@ -47,7 +49,7 @@ def main_interaction():
     while user_input.lower() != "exit":
         print()
         print(
-            f"type in a command: ('{colored_text('help', command_color)}' to list all commands)")
+            f"type in a command: ('{colored('help', command_color)}' to list all commands)")
         user_input = input(">>> ")
         if user_input.lower() == "exit":
             exit(0)
@@ -63,7 +65,10 @@ def main_interaction():
                         "loadpuzzle": interface_loadpuzzle,
                         "rename": interface_rename,
                         "delmove": interface_delmove,
-                        "closepuzzle": interface_closepuzzle}
+                        "closepuzzle": interface_closepuzzle,
+                        "sleeptime": interface_sleeptime,
+                        "scramble": interface_scramble,
+                        "reset": interface_reset}
 
         if validate_command(command_dict, user_input):
             run_command(command_dict, user_input, puzzle,
@@ -102,20 +107,29 @@ def run_command(command_dict, user_input, puzzle, command_color="#ff8800", arg_c
         None
     """
     command = user_input.split(" ")[0]
-
-    if command in ["import", "snap", "newmove", "move", "printmove", "savepuzzle", "loadpuzzle", "rename", "delmove"]:
+    commands_with_args = ["import",
+                          "snap",
+                          "newmove",
+                          "rename",
+                          "move",
+                          "delmove",
+                          "printmove",
+                          "savepuzzle",
+                          "loadpuzzle",
+                          "sleeptime"]
+    if command in commands_with_args:
         try:
             user_arguments = user_input[len(command)+1:]
             print(
                 f"executing {colored(command, command_color)} {colored(user_arguments, arg_color)} ...")
+            command_dict[command](user_arguments,
+                                puzzle,
+                                command_color=command_color,
+                                arg_color=arg_color,
+                                error_color=error_color)
         except IndexError:
             print(
                 f"{colored('Error:', error_color)} {colored(command, command_color)} requires additional options.")
-        command_dict[command](user_arguments,
-                              puzzle,
-                              command_color=command_color,
-                              arg_color=arg_color,
-                              error_color=error_color)
     else:
         command_dict[command](puzzle,
                               command_color=command_color,
@@ -142,6 +156,59 @@ def interface_closepuzzle(puzzle, command_color="#ff8800", arg_color="#5588ff", 
         except:
             pass
         main_interaction()
+
+
+def interface_help(puzzle, command_color="#ff8800", arg_color="#0055cc", error_color="#ff0000"):
+    print(f"- {colored('import', command_color)} [{colored('filepath', arg_color)}]          \
+- load file from 'filepath' and show points in vpython")
+
+    print(f"- {colored('snap', command_color)} [{colored('mode', arg_color)}]                \
+- snap points to shape, {colored('mode', arg_color)} = '{colored('cube', arg_color)}'='{colored('c', arg_color)}' \
+or '{colored('sphere', arg_color)}'='{colored('s', arg_color)}'\n{' '*31}\
+run {colored('snap', command_color)} again to hide the snap shape\n{' '*31}\
+'{colored('reset', arg_color)}'='{colored('r', arg_color)}' - resets points to inital positions")
+
+    print(f"- {colored('newmove', command_color)} [{colored('movename', arg_color)}]         \
+- create new move with name 'movename'")
+
+    print(f"- {colored('endmove', command_color)}                    \
+- exit move creator mode and save current move to some file")
+
+    print(f"- {colored('move', command_color)} [{colored('movename', arg_color)}]            \
+- perform the move with the given 'movename'")
+
+    print(f"- {colored('listmoves', command_color)}                  \
+- list all saved moves")
+
+    print(f"- {colored('printmove', command_color)} [{colored('movename', arg_color)}]       \
+- print all cycles of the given move")
+
+    print(f"- {colored('help', command_color)}                       \
+- print this overview")
+
+    print(f"- {colored('exit', command_color)}                       \
+- close program")
+
+    print(f"- {colored('savepuzzle', command_color)} [{colored('puzzlename', arg_color)}]    \
+- save the current puzzle into a file 'puzzledefinition.xml'")
+
+    print(f"- {colored('loadpuzzle', command_color)} [{colored('puzzlename', arg_color)}]    \
+- load puzzle from .xml file")
+
+    print(f"- {colored('rename', command_color)} [{colored('oldname', arg_color)}] [{colored('newname', arg_color)}] \
+- rename a move")
+
+    print(f"- {colored('delmove', command_color)} [{colored('movename', arg_color)}]         \
+- delete the given move")
+
+    print(f"- {colored('closepuzzle', command_color)}                \
+- close the current animation window")
+
+    print(f"- {colored('sleeptime', command_color)} [{colored('time', arg_color)}]           \
+- change the sleep time to change animation speed (default: 5e-3)")
+
+    print(f"- {colored('reset', command_color)}                      \
+- reset the puzzle to a solved state")
 
 
 if __name__ == "__main__":

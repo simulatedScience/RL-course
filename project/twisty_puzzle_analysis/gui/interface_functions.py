@@ -4,11 +4,7 @@ interface methods
 import time
 import vpython as vpy
 from interaction_modules.colored_text import colored_text
-from interaction_modules.methods import *
-
-
-def interface_help(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
-    run_help(command_color, arg_color)
+# from interaction_modules.methods import *
 
 
 def interface_import(filepath, history_dict, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
@@ -110,3 +106,30 @@ def interface_delmove(move_name, puzzle, command_color="#ff8800", arg_color="#55
         print(f"delted the move {colored(movename, arg_color)}.")
     except KeyError:
         print(f"{colored('Error:', error_color)} Move {colored(move_name, arg_color)} does not exist.")
+
+
+def interface_sleeptime(sleep_time, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    updates the sleep time in the active puzzle
+    """
+    try:
+        puzzle.sleep_time = float(sleep_time)
+    except:
+        print(f"{colored('Error:', error_color)} Given time is not a float.")
+
+
+def interface_scramble(max_moves, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    scrambles the given puzzle
+    """
+    try:
+        puzzle.scramble(max_moves=int(max_moves), arg_color=arg_color)
+    except:
+        puzzle.scramble(arg_color=arg_color)
+
+
+def interface_reset(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    reset puzzle to a solved state
+    """
+    puzzle.reset_to_solved()
