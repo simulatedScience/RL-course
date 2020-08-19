@@ -277,3 +277,15 @@ class Twisty_Puzzle():
         print(f"{colored(move_name, arg_color)} is defined by the cycles", self.moves[move_name])
 
 
+    def train_q_learning(self, num_episodes=None, max_moves=None, learning_rate=None, discount_factor=None, base_exploration_rate=None):
+        ai_state, color_list = state_for_ai(self.SOLVED_STATE)
+        reward_dict = {"solved":1,
+                       "timeout":-1,
+                       "move":-0.02}
+        self.AI_class = puzzle_ai(deepcopy(self.moves), ai_state, reward_dict=reward_dict, name=self.PUZZLE_NAME)
+        self.AI_class.train_q_learning(reward_dict=reward_dict,
+                                       learning_rate=learning_rate,
+                                       discount_factor=discount_factor,
+                                       base_exploration_rate=base_exploration_rate,
+                                       keep_Q_table=True, max_moves=max_moves,
+                                       num_episodes=num_episodes)

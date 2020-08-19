@@ -4,7 +4,7 @@ from copy import deepcopy
 from .twisty_puzzle_model import scramble, perform_action
 
 class puzzle_ai():
-    def __init__(self, ACTIONS_DICT, SOLVED_STATE, reward_dict, name="twisty_puzzle #0", learning_rate=0.02, discount_factor=0.95, base_exploration_rate=0.7):
+    def __init__(self, ACTIONS_DICT, SOLVED_STATE, reward_dict={"solved":10, "timeout":-1, "move":-0.2}, name="twisty_puzzle #0", learning_rate=0.02, discount_factor=0.95, base_exploration_rate=0.7):
         """
         initialize a puzzle for ai training
 
@@ -23,7 +23,10 @@ class puzzle_ai():
             base_exploration_rate - (float) - the starting exploration rate
 
         """
-        self.name = name
+        if not name == None:
+            self.name = name
+        else:
+            self.name = "twisty_puzzle #0"
         self.ACTIONS_DICT = ACTIONS_DICT
         self.SOLVED_STATE = SOLVED_STATE
 
