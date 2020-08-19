@@ -5,7 +5,7 @@ import time
 from copy import deepcopy
 import vpython as vpy
 
-from twisty_puzzle_model import scramble, perform_action
+from ai_modules.twisty_puzzle_model import scramble, perform_action
 
 import ggb_import.ggb_to_vpy as ggb_vpy
 
@@ -85,8 +85,9 @@ class Twisty_Puzzle():
         -------
             max_moves - (int) - the number of random moves
         """
-        scramble_hist = scramble(self.current_state, max_moves=max_moves)
-        return scramble_hist
+        scramble_hist = scramble(self.current_state, max_moves=max_moves, arg_color="#0066ff")
+        print("scrambled with the following moves:\n{colored(scramble_hist, arg_color)}")
+        self.perform_move(scramble_hist)
 
 
     def reset_to_solved(self):
@@ -161,7 +162,6 @@ class Twisty_Puzzle():
             self.active_move_name = self.active_move_name[:-1] \
                 if "'" == self.active_move_name[-1] else self.active_move_name + "'"
             self.end_movecreation(arg_color=arg_color, add_inverse=False) # add inverse move
-
 
 
     def inverse_cycles(self, cycle_list):
