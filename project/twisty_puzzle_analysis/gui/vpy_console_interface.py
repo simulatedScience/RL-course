@@ -116,7 +116,8 @@ def run_command(command_dict, user_input, puzzle, command_color="#ff8800", arg_c
                           "printmove",
                           "savepuzzle",
                           "loadpuzzle",
-                          "sleeptime"]
+                          "sleeptime",
+                          "scramble"]
     if command in commands_with_args:
         try:
             user_arguments = user_input[len(command)+1:]

@@ -281,3 +281,14 @@ class puzzle_ai():
             return random.choice(best_actions)
         # explore environment through random move
         return random.choice(list(self.ACTIONS_DICT.keys()))
+
+
+    def export_Q_table(self, filename="Q_table.txt"):
+        """
+        write the given Q-table into a file
+        """
+        with open(filename, "w") as file:
+            file.write("{\n")
+            for key, value in self.Q_table.items():
+                file.write(str(key) + ":" + str(value) + ",\n")
+            file.write("}")
