@@ -5,7 +5,7 @@ import time
 from copy import deepcopy
 import vpython as vpy
 
-from .ggb_import.ggb_to_vpy import draw_points
+from .ggb_import.ggb_to_vpy import draw_points, get_point_dicts
 
 from .interaction_modules.colored_text import colored_text as colored
 from .interaction_modules.save_to_xml import save_to_xml
@@ -242,15 +242,15 @@ class Twisty_Puzzle():
             filepath - (str) - path to a .ggb file represeting a puzzle
         """
         try:
-            self.POINT_INFO_DICTS = ggb_vpy.get_point_dicts(filepath)
+            self.POINT_INFO_DICTS = get_point_dicts(filepath)
         except FileNotFoundError:
-            self.POINT_INFO_DICTS = ggb_vpy.get_point_dicts(filepath+".ggb")
-        self.COM = get_com(self.vpy_objects)
+            self.POINT_INFO_DICTS = get_point_dicts(filepath+".ggb")
         self.canvas = create_canvas()
-        # draw_points also converts coords in dictionaries to vpython vectors
         self.vpy_objects = draw_points(self.POINT_INFO_DICTS)
+        self.COM = get_com(self.vpy_objects)
+        # draw_points also converts coords in dictionaries to vpython vectors
 
-        if not self.COM.abs < 1e-10:
+        if not self.COM.mag < 1e-10:
             for point_dict, obj in zip(self.POINT_INFO_DICTS, self.vpy_objects):
                 obj.pos -= self.COM
                 point_dict["coords"] -= self.COM

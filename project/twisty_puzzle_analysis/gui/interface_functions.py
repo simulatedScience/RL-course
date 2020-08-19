@@ -7,7 +7,7 @@ from .interaction_modules.colored_text import colored_text
 # from interaction_modules.methods import *
 
 
-def interface_import(filepath, history_dict, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+def interface_import(filepath, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
     """
     import puzzle from geogebra file and save information in 'history_dict'
     """
@@ -57,14 +57,14 @@ def interface_printmove(movename, puzzle, command_color="#ff8800", arg_color="#5
 
 
 def interface_savepuzzle(puzzlename, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
-    try:
+    # try:
         if not ' ' in puzzlename:
             puzzle.save_puzzle(puzzlename)
             print(f"saved puzzle as {colored(puzzlename, arg_color)}")
         else:
             raise ValueError("invalid puzzle name")
-    except:
-        print(f"{colored('Error:', error_color)} invalid puzzle name. Name must not include spaces or other invalid characters for filenames.")
+    # except:
+    #     print(f"{colored('Error:', error_color)} invalid puzzle name. Name must not include spaces or other invalid characters for filenames.")
 
 
 def interface_loadpuzzle(puzzlename, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
