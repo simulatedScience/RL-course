@@ -77,7 +77,7 @@ class Twisty_Puzzle():
             self.snap_obj = None
 
 
-    def scramble(self, max_moves=30):
+    def scramble(self, max_moves=30, arg_color="#0066ff"):
         """
         scramble the puzzle by applying [max_moves] random moves
 
@@ -85,9 +85,10 @@ class Twisty_Puzzle():
         -------
             max_moves - (int) - the number of random moves
         """
-        scramble_hist = scramble(self.current_state, max_moves=max_moves, arg_color="#0066ff")
+        scramble_hist = scramble(self.vpy_objects, self.moves, max_moves=max_moves)
         print("scrambled with the following moves:\n{colored(scramble_hist, arg_color)}")
-        self.perform_move(scramble_hist)
+        for move in scramble_hist:
+            self.perform_move(move)
 
 
     def reset_to_solved(self):
