@@ -5,8 +5,6 @@ import time
 from copy import deepcopy
 import vpython as vpy
 
-from ai_modules.twisty_puzzle_model import scramble, perform_action
-
 import ggb_import.ggb_to_vpy as ggb_vpy
 
 from interaction_modules.colored_text import colored_text as colored
@@ -18,6 +16,8 @@ from vpython_modules.vpy_rotation import get_com, make_move
 from vpython_modules.cycle_input import bind_click
 
 from shape_snapping import snap_to_cube, snap_to_sphere
+
+from ai_modules.twisty_puzzle_model import scramble, perform_action
 
 
 class Twisty_Puzzle():
