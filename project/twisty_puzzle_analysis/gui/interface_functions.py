@@ -113,7 +113,9 @@ def interface_sleeptime(sleep_time, puzzle, command_color="#ff8800", arg_color="
     updates the sleep time in the active puzzle
     """
     try:
+        print(puzzle.sleep_time)
         puzzle.sleep_time = float(sleep_time)
+        print(puzzle.sleep_time)
     except:
         print(f"{colored('Error:', error_color)} Given time is not a float.")
 
