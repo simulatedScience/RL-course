@@ -128,7 +128,7 @@ class Twisty_Puzzle():
                       anim_steps=45)
 
 
-    def newmove(self, movename):
+    def newmove(self, movename, arg_color="#0066ff"):
         """
         start defining a new move with the given name, enable movecreator mode
 
@@ -138,7 +138,7 @@ class Twisty_Puzzle():
                 must not include spaces
         """
         if self.movecreator_mode:
-            self.end_movecreation(self)
+            self.end_movecreation(arg_color=arg_color)
         self.movecreator_mode = True
         self.active_move_name = movename
         self.active_move_cycles = []
@@ -288,7 +288,7 @@ class Twisty_Puzzle():
         train the Q-table for the current puzzle
         """
         ai_state, self.ai_color_list = state_for_ai(self.SOLVED_STATE)
-        reward_dict = {"solved":1,
+        reward_dict = {"solved":10,
                        "timeout":-1,
                        "move":-0.02}
         if not hasattr(self, "AI_class"):

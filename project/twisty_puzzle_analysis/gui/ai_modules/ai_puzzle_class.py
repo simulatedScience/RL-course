@@ -83,7 +83,7 @@ class puzzle_ai():
         games = []
         scramble_hist = []
         solved_hist = []
-        increased_difficulties = []
+        increased_difficulties = [0]
         explo_rates = []
         n_tests = 30
         start_x = 0.2
@@ -97,6 +97,7 @@ class puzzle_ai():
                     n_tests += 1
                     increased_difficulties.append(n)
                     x = start_x
+                    exploration_rate = base_exploration_rate
                 max_scramble_moves = new_max_moves
 
             # generate a starting state
@@ -107,11 +108,11 @@ class puzzle_ai():
 
             if state_hist[-1] == tuple(self.SOLVED_STATE):
                 solved_hist.append(True)
-                x -= 0.2
+                x -= 0.2 * (exploration_rate)
             else:
                 solved_hist.append(False)
-                x += 0.2
-            exploration_rate = base_exploration_rate * self.sigmoid(x)
+                x += 0.2 * (base_exploration_rate - exploration_rate)
+            exploration_rate = base_exploration_rate * self.sigmoid(x)# * (0.999**(n-increased_difficulties[-1]))
 
             # save results and prepare for next episode
             games.append((scramble_hist[-1], state_hist, action_hist))
@@ -210,7 +211,7 @@ class puzzle_ai():
             state_history.append(state_tuple)
 
             #choose next action based on an epsilon-greedy strategy with epsilon=exploration_rate
-            action = self.choose_Q_action(state_tuple, exploration_rate=exploration_rate)
+            action = self.choose_Q_action(state_tuple, exploration_rate=exploration_rate**n_moves)
             action_history.append(action)
 
             if len(state_history) > 1:
