@@ -37,6 +37,6 @@ There are $6$ edge pieces which can be permuted in $6!$ ways. But similar to the
 Finally we can rotate edge pieces in $2^6$ ways but only $2^5$ of these states are actually possible without dissassembling the puzzle.
 
 ## Results
-So overall we have $\frac{4! \cdot 3^4 \cdot 3^4 \cdot 6! \cdot 2^6}{2 \cdot 3 \cdot 3 \cdot 2 \cdot 2} = \frac{4! \cdot 6! \cdot 3^6 \cdot 2^5}{2 \cdot 2} = \cdot 2^{10} \cdot 3^9 \cdot 5 = 100,776,960 \approx 1.0 \cdot 10^{8}$ possible arrangements of a Ghost Skewb.
+So overall we have $\frac{4! \cdot 3^4 \cdot 3^4 \cdot 6! \cdot 2^6}{2 \cdot 3 \cdot 3 \cdot 2 \cdot 2} = \frac{4! \cdot 6! \cdot 3^6 \cdot 2^5}{2 \cdot 2} = 3! \cdot  6! \cdot 2^5 = 138240$ possible arrangements of a Ghost Skewb.
 
-In a regular Skewb, the orientation of the edges is not visible. Therefor we divide by $32=2^5$ and get $\\2^5 \cdot 3^9 \cdot 5 = 3149280 \approx 3 \cdot 10^6$ possible states.
+In a regular Skewb, the orientation of the edges is not visible. Therefor that has only $3! \cdot 6! = 4320$ possible states.
