@@ -140,18 +140,23 @@ def interface_train_Q(user_args, puzzle, command_color="#ff8800", arg_color="#55
     train the Q-table for the current puzzle
     """
     user_args = user_args.split(' ')
-    # make user_args the correct length (5)
-    if len(user_args) > 5:
-        user_args = user_args[:5]
-    elif len(user_args) < 5:
-        user_args += ['']*(5-len(user_args))
+    n_args = 6
+    # make user_args the correct length (n_args)
+    if len(user_args) > n_args:
+        user_args = user_args[:n_args]
+    elif len(user_args) < n_args:
+        user_args += ['']*(n_args-len(user_args))
 
     try:
         int_args = [int(arg) if not arg=='' else None for arg in user_args[:2]]
-        float_args = [float(arg) if not arg=='' else None for arg in user_args[2:]]
+        float_args = [float(arg) if not arg=='' else None for arg in user_args[2:5]]
     except ValueError:
         print(f"{colored('Error:', error_color)} Invalid argument types.")
         return
+    if user_args[5].lower() == "false":
+        keep_Q = False
+    else:
+        keep_Q = True
 
     num_episodes, max_moves = int_args
     learning_rate, discount_factor, exploration_rate = float_args
@@ -160,7 +165,8 @@ def interface_train_Q(user_args, puzzle, command_color="#ff8800", arg_color="#55
                             max_moves=max_moves,
                             learning_rate=learning_rate,
                             discount_factor=discount_factor,
-                            base_exploration_rate=exploration_rate)
+                            base_exploration_rate=exploration_rate,
+                            keep_Q_table=keep_Q)
 
 
 def interface_move_Q(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):

@@ -283,7 +283,7 @@ class Twisty_Puzzle():
         print(f"{colored(move_name, arg_color)} is defined by the cycles", self.moves[move_name])
 
 
-    def train_q_learning(self, num_episodes=None, max_moves=None, learning_rate=None, discount_factor=None, base_exploration_rate=None):
+    def train_q_learning(self, num_episodes=None, max_moves=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True):
         """
         train the Q-table for the current puzzle
         """
@@ -292,15 +292,15 @@ class Twisty_Puzzle():
                        "timeout":-1,
                        "move":-0.02}
         if not hasattr(self, "AI_class"):
-            self.AI_class = puzzle_ai(deepcopy(self.moves), ai_state, reward_dict=reward_dict, name=self.PUZZLE_NAME)
-        games, self.solved_hist, self.diff_increase = \
+            self.AI_class = puzzle_ai(deepcopy(self.moves), ai_state, reward_dict=reward_dict, name=self.PUZZLE_NAME, keep_Q_table=keep_Q_table)
+        games, self.solved_hist, self.diff_increase, self.explo_rates = \
             self.AI_class.train_q_learning(reward_dict=reward_dict,
                                            learning_rate=learning_rate,
                                            discount_factor=discount_factor,
                                            base_exploration_rate=base_exploration_rate,
-                                           keep_Q_table=True, 
                                            max_moves=max_moves,
-                                           num_episodes=num_episodes)
+                                           num_episodes=num_episodes,
+                                           keep_Q_table=keep_Q_table)
 
 
     def move_Q(self, arg_color="#0066ff"):
@@ -357,8 +357,11 @@ class Twisty_Puzzle():
             solved_percent = self.solved_hist[i-batch_size:i].count(True)/batch_size
             y_data.append(solved_percent)
             x_data.append(i)
-        
+
         plt.vlines(self.diff_increase, 0, 1, colors=["#dddddd"], linestyles="--")
+
+
+        plt.plot([i for i in range(len(self.solved_hist))], self.explo_rates, ".", color="#ff8800")
 
         plt.plot(x_data, y_data, ".")
         plt.show()

@@ -5,7 +5,14 @@ from copy import deepcopy
 from .twisty_puzzle_model import scramble, perform_action
 
 class puzzle_ai():
-    def __init__(self, ACTIONS_DICT, SOLVED_STATE, reward_dict={"solved":10, "timeout":-1, "move":-0.2}, name="twisty_puzzle #0", learning_rate=0.02, discount_factor=0.95, base_exploration_rate=0.7):
+    def __init__(self, 
+                 ACTIONS_DICT,SOLVED_STATE,
+                 reward_dict={"solved":10, "timeout":-1, "move":-0.2},
+                 name="twisty_puzzle #0",
+                 learning_rate=0.02,
+                 discount_factor=0.95,
+                 base_exploration_rate=0.7,
+                 keep_Q_table=True):
         """
         initialize a puzzle for ai training
 
@@ -37,10 +44,13 @@ class puzzle_ai():
         self.base_exploration_rate = base_exploration_rate
         # self.N_table = None
 
-        try:
-            self.Q_table = dict()
-            self.import_q_table()
-        except FileNotFoundError:
+        if keep_Q_table:
+            try:
+                self.Q_table = dict()
+                self.import_q_table()
+            except FileNotFoundError:
+                self.Q_table = None
+        else:
             self.Q_table = None
 
 
@@ -74,16 +84,19 @@ class puzzle_ai():
         scramble_hist = []
         solved_hist = []
         increased_difficulties = []
+        explo_rates = []
         n_tests = 30
+        start_x = 0.2
+        x = start_x
         max_scramble_moves = 1
-        exploration_rate = self.base_exploration_rate
+        exploration_rate = base_exploration_rate
         for n in range(num_episodes):
             if n%20 == 19:
                 new_max_moves = self.get_new_scramble_moves(max_scramble_moves, solved_hist, n_tests=n_tests)
                 if not new_max_moves == max_scramble_moves:
                     n_tests += 1
                     increased_difficulties.append(n)
-                    exploration_rate = self.base_exploration_rate
+                    x = start_x
                 max_scramble_moves = new_max_moves
 
             # generate a starting state
@@ -94,21 +107,32 @@ class puzzle_ai():
 
             if state_hist[-1] == tuple(self.SOLVED_STATE):
                 solved_hist.append(True)
-                # exploration_rate *= base_exploration_rate
+                x -= 0.2
             else:
                 solved_hist.append(False)
+                x += 0.2
+            exploration_rate = base_exploration_rate * self.sigmoid(x)
 
             # save results and prepare for next episode
             games.append((scramble_hist[-1], state_hist, action_hist))
-            exploration_rate = self.get_new_exploration_rate(exploration_rate, n, num_episodes)
+            # exploration_rate = self.get_new_exploration_rate(exploration_rate, n, num_episodes)
+            explo_rates.append(exploration_rate)
 
         print("final exploration rate:", exploration_rate)
         print("final scramble moves:", max_scramble_moves)
         print(f"considered states of the puzzle:", len(self.Q_table))
-        self.export_Q_table()
+        if len(self.Q_table) > 0:
+            self.export_Q_table()
         print("saved Q_table")
 
-        return games, solved_hist, increased_difficulties
+        return games, solved_hist, increased_difficulties, explo_rates
+
+
+    def sigmoid(self, x):
+        """
+        the sigmoid function 
+        """
+        return 1/(1+2.718281828**(-x))
 
 
     def update_settings(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True):
