@@ -2,6 +2,7 @@
 a class for storing information about twisty puzzles
 """
 import time
+import random
 from copy import deepcopy
 import vpython as vpy
 
@@ -85,10 +86,12 @@ class Twisty_Puzzle():
         -------
             max_moves - (int) - the number of random moves
         """
-        scramble_hist = scramble(self.vpy_objects, self.moves, max_moves=max_moves)
-        print("scrambled with the following moves:\n{colored(scramble_hist, arg_color)}")
-        for move in scramble_hist:
+        scramble_hist = ""
+        for _ in range(max_moves):
+            move = random.choice(list(self.moves.keys()))
+            scramble_hist += move + ' '
             self.perform_move(move)
+        print(f"scrambled with the following moves:\n{colored(scramble_hist, arg_color)}")
 
 
     def reset_to_solved(self):
