@@ -290,7 +290,8 @@ class Twisty_Puzzle():
         reward_dict = {"solved":1,
                        "timeout":-1,
                        "move":-0.02}
-        self.AI_class = puzzle_ai(deepcopy(self.moves), ai_state, reward_dict=reward_dict, name=self.PUZZLE_NAME)
+        if not hasattr(self, "AI_class"):
+            self.AI_class = puzzle_ai(deepcopy(self.moves), ai_state, reward_dict=reward_dict, name=self.PUZZLE_NAME)
         self.AI_class.train_q_learning(reward_dict=reward_dict,
                                        learning_rate=learning_rate,
                                        discount_factor=discount_factor,
@@ -310,18 +311,24 @@ class Twisty_Puzzle():
         print(f"made move: {colored(ai_move, arg_color)}")
 
 
-    def solve_Q(self, max_moves=300, arg_color="#0066ff"):
+    def solve_Q(self, max_moves=100, arg_color="#0066ff"):
         """
         solve the puzzle based on the current Q-table of the AI
         """
         solve_moves = ""
+        last_moves = []
         for n in range(max_moves):
             ai_state = self.get_ai_state()
             if self.AI_class.puzzle_solved(ai_state, n, max_moves=max_moves) == "solved":
                 print(f"solved the puzzle after {colored(str(n), arg_color)} moves:")
                 print(f"{colored(solve_moves[:-1], arg_color)}")
                 break
-            ai_move = self.AI_class.choose_Q_action(tuple(ai_state))
+            if len(set(last_moves[-10:])) == 1:
+                ai_move = self.AI_class.choose_Q_action(tuple(ai_state), exploration_rate=0.5)
+                print("detected loop")
+            else:
+                ai_move = self.AI_class.choose_Q_action(tuple(ai_state), exploration_rate=0)
+            last_moves.append(ai_move)
             self.perform_move(ai_move)
             solve_moves += ai_move + ' '
 

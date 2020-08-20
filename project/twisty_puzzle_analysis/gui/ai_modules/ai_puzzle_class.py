@@ -68,9 +68,16 @@ class puzzle_ai():
 
         games = []
         scramble_hist = []
+        solved_hist = []
+        n_tests = 30
+        max_scramble_moves = 1
         exploration_rate = self.base_exploration_rate
         for n in range(num_episodes):
-            max_scramble_moves = self.get_new_scramble_moves(n)
+            if n%20 == 19:
+                new_max_moves = self.get_new_scramble_moves(max_scramble_moves, solved_hist, n_tests=n_tests)
+                if not new_max_moves == max_scramble_moves:
+                    n_tests += 1
+                max_scramble_moves = new_max_moves
 
             # generate a starting state
             start_state = deepcopy(self.SOLVED_STATE)
@@ -78,12 +85,20 @@ class puzzle_ai():
             # play episode
             state_hist, action_hist = self.play_episode(start_state, max_moves=max_moves, exploration_rate=exploration_rate)
 
+            if state_hist[-1] == tuple(self.SOLVED_STATE):
+                solved_hist.append(True)
+            else:
+                solved_hist.append(False)
+
             # save results and prepare for next episode
             games.append((scramble_hist[-1], state_hist, action_hist))
             exploration_rate = self.get_new_exploration_rate(exploration_rate, n, num_episodes)
 
         print("final exploration rate:", exploration_rate)
+        print("final scramble moves:", max_scramble_moves)
+        print(f"considered states of the puzzle:", len(self.Q_table))
         self.export_Q_table()
+        print("saved Q_table")
 
         return games
 
@@ -125,11 +140,15 @@ class puzzle_ai():
         return exploration_rate - self.base_exploration_rate/(2*num_episodes)
 
 
-    def get_new_scramble_moves(self,n):
+    def get_new_scramble_moves(self, max_scramble_moves, solved_hist, n_tests=30):
         """
         function which updates the number of moves for scrambling the puzzle
         """
-        return ceil((1+n)/30)
+        if False in solved_hist[-min(len(solved_hist), n_tests):]:
+            return max_scramble_moves
+        else:
+            return max_scramble_moves + 1
+
 
 
     def play_episode(self,
