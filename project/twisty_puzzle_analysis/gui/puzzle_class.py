@@ -281,7 +281,7 @@ class Twisty_Puzzle():
 
 
     def train_q_learning(self, num_episodes=None, max_moves=None, learning_rate=None, discount_factor=None, base_exploration_rate=None):
-        ai_state, color_list = state_for_ai(self.SOLVED_STATE)
+        ai_state, self.ai_color_list = state_for_ai(self.SOLVED_STATE)
         reward_dict = {"solved":1,
                        "timeout":-1,
                        "move":-0.02}
@@ -290,5 +290,46 @@ class Twisty_Puzzle():
                                        learning_rate=learning_rate,
                                        discount_factor=discount_factor,
                                        base_exploration_rate=base_exploration_rate,
-                                       keep_Q_table=True, max_moves=max_moves,
+                                       keep_Q_table=True, 
+                                       max_moves=max_moves,
                                        num_episodes=num_episodes)
+
+
+    def move_Q(self):
+        """
+        make one move based on the current Q-table of the AI
+        """
+        ai_state = self.get_ai_state()
+        ai_move = self.AI_class.choose_Q_action(ai_state)
+        self.perform_move(ai_move)
+
+
+    def solve_Q(self, max_moves=300, arg_color="#0066ff"):
+        """
+        solve the puzzle based on the current Q-table of the AI
+        """
+        solve_moves = ""
+        for n in range(max_moves):
+            if self.AI_class.puzzle_solved(ai_state) == "solved":
+                print(f"solved the puzzle after {n} moves:")
+                print(f"{colored(solve_moves[:-1], arg_color)}")
+                break
+            ai_state = self.get_ai_state()
+            ai_move = self.AI_class.choose_Q_action(ai_state)
+            self.perform_move(ai_move)
+            solve_moves += ai_move + ' '
+
+
+
+    def get_ai_state(self):
+        """
+        return the current puzzle state for the ai based on self.ai_color_list
+        """
+        ai_state = []
+
+        for color in self.SOLVED_STATE:
+            for i, index_color in enumerate(self.ai_color_list):
+                if index_color == color:
+                    ai_state.append(i)
+
+        return ai_state
