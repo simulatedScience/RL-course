@@ -34,7 +34,7 @@ def interface_newmove(movename, puzzle, command_color="#ff8800", arg_color="#558
         print(
             f"{colored('Error:', error_color)} Movename cannot be empty or include a space.")
         return
-    puzzle.newmove(movename)
+    puzzle.newmove(movename, arg_color=arg_color)
 
 
 def interface_endmove(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
@@ -92,7 +92,7 @@ def interface_rename(user_input, puzzle, command_color="#ff8800", arg_color="#55
     """
     old_name, new_name = user_input.split(" ")
     try:
-        puzzle.rename(old_name, new_name)
+        puzzle.rename_move(old_name, new_name)
     except KeyError:
         print(f"{colored('Error:', error_color)} Move {colored(old_name, arg_color)} does not exist.")
 
@@ -103,7 +103,7 @@ def interface_delmove(move_name, puzzle, command_color="#ff8800", arg_color="#55
     """
     try:
         puzzle.del_move(move_name)
-        print(f"delted the move {colored(movename, arg_color)}.")
+        print(f"delted the move {colored(move_name, arg_color)}.")
     except KeyError:
         print(f"{colored('Error:', error_color)} Move {colored(move_name, arg_color)} does not exist.")
 
