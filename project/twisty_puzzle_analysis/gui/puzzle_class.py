@@ -19,6 +19,8 @@ from .vpython_modules.cycle_input import bind_click
 from .shape_snapping import snap_to_cube, snap_to_sphere
 
 from .ai_modules.twisty_puzzle_model import scramble, perform_action
+from .ai_modules.ai_data_preparation import state_for_ai
+from .ai_modules.ai_puzzle_class import puzzle_ai
 
 
 class Twisty_Puzzle():
@@ -314,12 +316,12 @@ class Twisty_Puzzle():
         """
         solve_moves = ""
         for n in range(max_moves):
-            if self.AI_class.puzzle_solved(ai_state) == "solved":
+            ai_state = self.get_ai_state()
+            if self.AI_class.puzzle_solved(ai_state, n, max_moves=max_moves) == "solved":
                 print(f"solved the puzzle after {colored(str(n), arg_color)} moves:")
                 print(f"{colored(solve_moves[:-1], arg_color)}")
                 break
-            ai_state = self.get_ai_state()
-            ai_move = self.AI_class.choose_Q_action(ai_state)
+            ai_move = self.AI_class.choose_Q_action(tuple(ai_state))
             self.perform_move(ai_move)
             solve_moves += ai_move + ' '
 
@@ -331,7 +333,7 @@ class Twisty_Puzzle():
         """
         ai_state = []
 
-        for color in self.SOLVED_STATE:
+        for color in [obj.color for obj in self.vpy_objects]:
             for i, index_color in enumerate(self.ai_color_list):
                 if index_color == color:
                     ai_state.append(i)

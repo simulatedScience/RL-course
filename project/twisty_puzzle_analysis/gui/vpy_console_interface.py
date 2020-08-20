@@ -68,7 +68,10 @@ def main_interaction():
                         "closepuzzle": interface_closepuzzle,
                         "sleeptime": interface_sleeptime,
                         "scramble": interface_scramble,
-                        "reset": interface_reset}
+                        "reset": interface_reset,
+                        "train_q": interface_train_Q,
+                        "move_q": interface_move_Q,
+                        "solve_q": interface_solve_Q}
 
         if validate_command(command_dict, user_input):
             run_command(command_dict, user_input, puzzle,
@@ -106,7 +109,7 @@ def run_command(command_dict, user_input, puzzle, command_color="#ff8800", arg_c
     --------
         None
     """
-    command = user_input.split(" ")[0]
+    command = user_input.split(" ")[0].lower()
     commands_with_args = ["import",
                           "snap",
                           "newmove",
@@ -117,7 +120,8 @@ def run_command(command_dict, user_input, puzzle, command_color="#ff8800", arg_c
                           "savepuzzle",
                           "loadpuzzle",
                           "sleeptime",
-                          "scramble"]
+                          "scramble",
+                          "train_q"]
     if command in commands_with_args:
         try:
             user_arguments = user_input[len(command)+1:]
@@ -210,6 +214,15 @@ run {colored('snap', command_color)} again to hide the snap shape\n{' '*31}\
 
     print(f"- {colored('reset', command_color)}                      \
 - reset the puzzle to a solved state")
+
+    print(f"- {colored('train_Q', command_color)} [{colored('num_episodes', arg_color)}] [{colored('max_moves', arg_color)}] [{colored('learning_rate', arg_color)}] [{colored('discount_factor', arg_color)}] [{colored('exploration_rate', arg_color)}]\n{' '*29}\
+- train the Q-table for the puzzle with the given parameters")
+
+    print(f"- {colored('move_Q', command_color)}                     \
+- make one move based on the current Q_table of the AI")
+
+    print(f"- {colored('solve_Q', command_color)}                    \
+- solve the puzzle using the current Q_table of the AI")
 
 
 if __name__ == "__main__":

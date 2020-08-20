@@ -1,4 +1,5 @@
 import random
+import os
 from math import ceil
 from copy import deepcopy
 from .twisty_puzzle_model import scramble, perform_action
@@ -263,7 +264,7 @@ class puzzle_ai():
         choose an action based on the possible actions, the current Q-table and the current exploration rate
         inputs:
         -------
-            state - (tuple) or (list) - the state as a tuple or list
+            state - (tuple) - the state as a tuple
             Q_table - (dict) - dictionary storing all known Q-values
             exploration_rate - (float) in [0,1] - probability of choosing exploration rather than exploitation
         """
