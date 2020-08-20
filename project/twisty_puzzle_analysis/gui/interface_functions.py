@@ -181,3 +181,17 @@ def interface_solve_Q(puzzle, command_color="#ff8800", arg_color="#5588ff", erro
         puzzle.solve_Q(arg_color=arg_color)
     except AttributeError:
         print(f"{colored('Error:', error_color)} Train the Q-table before requesting a move.")
+
+
+def interface_plot_success(batch_size, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    plot evalutation of the Q-training
+    """
+    try:
+        batch_size = int(batch_size)
+    except:
+        batch_size = 30
+    try:
+        puzzle.plot_q_success(batch_size=batch_size)
+    except AttributeError:
+        print(f"{colored('Error:', error_color)} Train the Q-table before evalutation.")

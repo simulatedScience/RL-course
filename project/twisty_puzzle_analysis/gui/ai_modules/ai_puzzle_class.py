@@ -35,9 +35,13 @@ class puzzle_ai():
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.base_exploration_rate = base_exploration_rate
+        # self.N_table = None
 
-        self.Q_table = None
-        self.N_table = None
+        try:
+            self.Q_table = dict()
+            self.import_q_table()
+        except FileNotFoundError:
+            self.Q_table = None
 
 
     def train_q_learning(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True, max_moves=500, num_episodes=1000):
@@ -68,9 +72,19 @@ class puzzle_ai():
 
         games = []
         scramble_hist = []
+        solved_hist = []
+        increased_difficulties = []
+        n_tests = 30
+        max_scramble_moves = 1
         exploration_rate = self.base_exploration_rate
         for n in range(num_episodes):
-            max_scramble_moves = self.get_new_scramble_moves(n)
+            if n%20 == 19:
+                new_max_moves = self.get_new_scramble_moves(max_scramble_moves, solved_hist, n_tests=n_tests)
+                if not new_max_moves == max_scramble_moves:
+                    n_tests += 1
+                    increased_difficulties.append(n)
+                    exploration_rate = self.base_exploration_rate
+                max_scramble_moves = new_max_moves
 
             # generate a starting state
             start_state = deepcopy(self.SOLVED_STATE)
@@ -78,14 +92,23 @@ class puzzle_ai():
             # play episode
             state_hist, action_hist = self.play_episode(start_state, max_moves=max_moves, exploration_rate=exploration_rate)
 
+            if state_hist[-1] == tuple(self.SOLVED_STATE):
+                solved_hist.append(True)
+                # exploration_rate *= base_exploration_rate
+            else:
+                solved_hist.append(False)
+
             # save results and prepare for next episode
             games.append((scramble_hist[-1], state_hist, action_hist))
             exploration_rate = self.get_new_exploration_rate(exploration_rate, n, num_episodes)
 
         print("final exploration rate:", exploration_rate)
+        print("final scramble moves:", max_scramble_moves)
+        print(f"considered states of the puzzle:", len(self.Q_table))
         self.export_Q_table()
+        print("saved Q_table")
 
-        return games
+        return games, solved_hist, increased_difficulties
 
 
     def update_settings(self, reward_dict=None, learning_rate=None, discount_factor=None, base_exploration_rate=None, keep_Q_table=True):
@@ -114,8 +137,8 @@ class puzzle_ai():
 
         if self.Q_table == None or not keep_Q_table: # Q_table doesn't exist yet or shall be overwritten
             self.Q_table = dict()    # assign values to every visited state-action pair
-        if self.N_table == None or not keep_Q_table: # N_table doesn't exist yet or shall be overwritten
-            self.N_table = dict()    # counting how often each state-action pair was visited
+        # if self.N_table == None or not keep_Q_table: # N_table doesn't exist yet or shall be overwritten
+        #     self.N_table = dict()    # counting how often each state-action pair was visited
 
 
     def get_new_exploration_rate(self,exploration_rate, n, num_episodes):
@@ -125,11 +148,15 @@ class puzzle_ai():
         return exploration_rate - self.base_exploration_rate/(2*num_episodes)
 
 
-    def get_new_scramble_moves(self,n):
+    def get_new_scramble_moves(self, max_scramble_moves, solved_hist, n_tests=30):
         """
         function which updates the number of moves for scrambling the puzzle
         """
-        return ceil((1+n)/30)
+        if False in solved_hist[-min(len(solved_hist), n_tests):]:
+            return max_scramble_moves
+        else:
+            return max_scramble_moves + 1
+
 
 
     def play_episode(self,
@@ -204,16 +231,16 @@ class puzzle_ai():
             except KeyError:
                 # initialize Q-values
                 self.Q_table[(state, action)] = 0
-                self.N_table[(state, action)] = 0
+                # self.N_table[(state, action)] = 0
                 next_rewards.append(0)
 
         if not action in self.Q_table.keys():
             self.Q_table[(prev_state, prev_action)] = 0
-            self.N_table[(prev_state, prev_action)] = 0
+            # self.N_table[(prev_state, prev_action)] = 0
         # actually update the q-value of the considered move
         # Q(S,A) += alpha*(R + gamma * max(S', a') - Q(S,A))
         self.Q_table[(prev_state, prev_action)] += self.learning_rate*(reward + self.discount_factor * max(next_rewards, default=0) - self.Q_table[(prev_state, prev_action)])
-        self.N_table[(prev_state, prev_action)] += 1
+        # self.N_table[(prev_state, prev_action)] += 1
 
 
     def get_reward(self,
@@ -297,3 +324,8 @@ class puzzle_ai():
             for key, value in self.Q_table.items():
                 file.write(str(key) + ":" + str(value) + ",\n")
             file.write("}")
+
+
+    def import_q_table(self, filename="Q_table.txt"):
+        with open(os.path.join(os.path.dirname(__file__), "..", "puzzles", self.name, filename), "r") as file:
+            self.Q_table = eval(file.read())
