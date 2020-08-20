@@ -94,6 +94,7 @@ class Twisty_Puzzle():
             move = random.choice(list(self.moves.keys()))
             scramble_hist += move + ' '
             self.perform_move(move)
+            time.sleep(50*self.sleep_time)
         print(f"scrambled with the following moves:\n{colored(scramble_hist, arg_color)}")
 
 
