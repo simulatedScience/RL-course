@@ -11,7 +11,7 @@ it should be able to...
 """
 from os import _exit as exit
 from .interaction_modules.colored_text import colored_text as colored
-from interface_functions import *
+from .interface_functions import *
 from .puzzle_class import Twisty_Puzzle
 
 
@@ -150,8 +150,6 @@ def interface_closepuzzle(puzzle, command_color="#ff8800", arg_color="#5588ff", 
                 puzzlename = ' '
                 while ' ' in puzzlename:
                     puzzlename = input("Enter a name without spaces to save the puzzle: ")
-            else:
-                puzzlename = self.PUZZLE_NAME
             puzzle.save_puzzle(puzzlename)
             print(f"saved puzzle as {colored(puzzlename, arg_color)}")
         try:

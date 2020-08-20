@@ -127,57 +127,15 @@
       <cycle>0, 8, 7</cycle>
       <cycle>24, 25, 26</cycle>
       <cycle>4, 17, 10</cycle>
-      <cycle>6, 16, 9</cycle>
       <cycle>5, 15, 11</cycle>
+      <cycle>6, 16, 9</cycle>
     </move>
     <move name="wbr'">
       <cycle>7, 8, 0</cycle>
       <cycle>26, 25, 24</cycle>
       <cycle>10, 17, 4</cycle>
-      <cycle>9, 16, 6</cycle>
       <cycle>11, 15, 5</cycle>
-    </move>
-    <move name="ryg">
-      <cycle>13, 12, 14</cycle>
-      <cycle>26, 29, 27</cycle>
-      <cycle>16, 23, 11</cycle>
-      <cycle>10, 15, 22</cycle>
-      <cycle>9, 17, 21</cycle>
-    </move>
-    <move name="ryg'">
-      <cycle>14, 12, 13</cycle>
-      <cycle>27, 29, 26</cycle>
-      <cycle>11, 23, 16</cycle>
-      <cycle>22, 15, 10</cycle>
-      <cycle>21, 17, 9</cycle>
-    </move>
-    <move name="wgo">
-      <cycle>1, 2, 3</cycle>
-      <cycle>24, 27, 28</cycle>
-      <cycle>11, 21, 4</cycle>
-      <cycle>9, 22, 5</cycle>
-      <cycle>10, 23, 6</cycle>
-    </move>
-    <move name="wgo'">
-      <cycle>3, 2, 1</cycle>
-      <cycle>28, 27, 24</cycle>
-      <cycle>4, 21, 11</cycle>
-      <cycle>5, 22, 9</cycle>
-      <cycle>6, 23, 10</cycle>
-    </move>
-    <move name="oyb">
-      <cycle>20, 18, 19</cycle>
-      <cycle>25, 28, 29</cycle>
-      <cycle>6, 21, 15</cycle>
-      <cycle>5, 23, 17</cycle>
-      <cycle>4, 22, 16</cycle>
-    </move>
-    <move name="oyb'">
-      <cycle>19, 18, 20</cycle>
-      <cycle>29, 28, 25</cycle>
-      <cycle>15, 21, 6</cycle>
-      <cycle>17, 23, 5</cycle>
-      <cycle>16, 22, 4</cycle>
+      <cycle>9, 16, 6</cycle>
     </move>
   </moves>
 </puzzledefinition>

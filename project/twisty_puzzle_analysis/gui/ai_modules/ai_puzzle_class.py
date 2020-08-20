@@ -82,6 +82,7 @@ class puzzle_ai():
             exploration_rate = self.get_new_exploration_rate(exploration_rate, n, num_episodes)
 
         print("final exploration rate:", exploration_rate)
+        self.export_Q_table()
 
         return games
 
@@ -290,7 +291,7 @@ class puzzle_ai():
         """
         write the given Q-table into a file
         """
-        with open(filename, "w") as file:
+        with open(os.path.join(os.path.dirname(__file__), "..", "puzzles", self.name, filename), "w") as file:
             file.write("{\n")
             for key, value in self.Q_table.items():
                 file.write(str(key) + ":" + str(value) + ",\n")

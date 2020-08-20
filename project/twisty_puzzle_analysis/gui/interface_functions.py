@@ -3,7 +3,7 @@ interface methods
 """
 import time
 import vpython as vpy
-from .interaction_modules.colored_text import colored_text
+from .interaction_modules.colored_text import colored_text as colored
 # from interaction_modules.methods import *
 
 
@@ -64,7 +64,7 @@ def interface_savepuzzle(puzzlename, puzzle, command_color="#ff8800", arg_color=
         else:
             raise ValueError("invalid puzzle name")
     # except:
-    #     print(f"{colored('Error:', error_color)} invalid puzzle name. Name must not include spaces or other invalid characters for filenames.")
+        # print(f"{colored('Error:', error_color)} invalid puzzle name. Name must not include spaces or other invalid characters for filenames.")
 
 
 def interface_loadpuzzle(puzzlename, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):

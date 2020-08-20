@@ -246,9 +246,9 @@ class Twisty_Puzzle():
         except FileNotFoundError:
             self.POINT_INFO_DICTS = get_point_dicts(filepath+".ggb")
         self.canvas = create_canvas()
+        # draw_points also converts coords in dictionaries to vpython vectors
         self.vpy_objects = draw_points(self.POINT_INFO_DICTS)
         self.COM = get_com(self.vpy_objects)
-        # draw_points also converts coords in dictionaries to vpython vectors
 
         if not self.COM.mag < 1e-10:
             for point_dict, obj in zip(self.POINT_INFO_DICTS, self.vpy_objects):

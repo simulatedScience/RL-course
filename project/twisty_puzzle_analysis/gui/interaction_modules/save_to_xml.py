@@ -36,16 +36,14 @@ def save_to_xml(puzzle):
         save_moves(root_elem, puzzle.moves)
     except KeyError:
         pass
-    try:
-        os.mkdir("puzzles")
+    try: # create a "puzzles" folder if it doesn't exist yet
+        os.mkdir(os.path.join(os.path.dirname(__file__), "..", "puzzles"))
     except FileExistsError:
         pass
-    try:
+    try: # create a folder for the given puzzle if it doesn't exist yet
         os.mkdir(os.path.join(os.path.dirname(__file__), "..", "puzzles", puzzle_name))
     except FileExistsError:
         pass
-    except FileNotFoundError:
-        print("FileNotFoundError")
     puzzle_tree = let.ElementTree(root_elem)
     xml_string = let.tostring(puzzle_tree,
                               pretty_print=True,
