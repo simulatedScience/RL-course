@@ -281,6 +281,9 @@ class Twisty_Puzzle():
 
 
     def train_q_learning(self, num_episodes=None, max_moves=None, learning_rate=None, discount_factor=None, base_exploration_rate=None):
+        """
+        train the Q-table for the current puzzle
+        """
         ai_state, self.ai_color_list = state_for_ai(self.SOLVED_STATE)
         reward_dict = {"solved":1,
                        "timeout":-1,
@@ -295,13 +298,14 @@ class Twisty_Puzzle():
                                        num_episodes=num_episodes)
 
 
-    def move_Q(self):
+    def move_Q(self, arg_color="#0066ff"):
         """
         make one move based on the current Q-table of the AI
         """
         ai_state = self.get_ai_state()
         ai_move = self.AI_class.choose_Q_action(ai_state)
         self.perform_move(ai_move)
+        print(f"made move: {colored(ai_move, arg_color)}")
 
 
     def solve_Q(self, max_moves=300, arg_color="#0066ff"):
@@ -311,7 +315,7 @@ class Twisty_Puzzle():
         solve_moves = ""
         for n in range(max_moves):
             if self.AI_class.puzzle_solved(ai_state) == "solved":
-                print(f"solved the puzzle after {n} moves:")
+                print(f"solved the puzzle after {colored(str(n), arg_color)} moves:")
                 print(f"{colored(solve_moves[:-1], arg_color)}")
                 break
             ai_state = self.get_ai_state()

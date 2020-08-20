@@ -133,3 +133,51 @@ def interface_reset(puzzle, command_color="#ff8800", arg_color="#5588ff", error_
     reset puzzle to a solved state
     """
     puzzle.reset_to_solved()
+
+
+def interface_train_Q(user_args, puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    train the Q-table for the current puzzle
+    """
+    user_args = user_args.split(' ')
+    # make user_args the correct length (5)
+    if len(user_args) > 5:
+        user_args = user_args[:5]
+    elif len(user_args) < 5:
+        user_args += ['']*(5-len(user_args))
+
+    try:
+        int_args = [int(arg) if not arg=='' else None for arg in user_args[:2]]
+        float_args = [float(arg) if not arg=='' else None for arg in user_args[2:]]
+    except ValueError:
+        print(f"{colored('Error:', error_color)} Invalid argument types.")
+        return
+
+    num_episodes, max_moves = int_args
+    learning_rate, discount_factor, exploration_rate = float_args
+
+    puzzle.train_q_learning(num_episodes=num_episodes,
+                            max_moves=max_moves,
+                            learning_rate=learning_rate,
+                            discount_factor=discount_factor,
+                            base_exploration_rate=exploration_rate)
+
+
+def interface_move_Q(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    make one move based on the current Q-table of the AI
+    """
+    try:
+        puzzle.move_Q()
+    except AttributeError:
+        print(f"{colored('Error:', error_color)} Train the Q-table before requesting a move.")
+
+
+def interface_solve_Q(puzzle, command_color="#ff8800", arg_color="#5588ff", error_color="#ff0000"):
+    """
+    solve the puzzle based on the current Q-table of the AI
+    """
+    try:
+        puzzle.solve_Q(arg_color=arg_color)
+    except AttributeError:
+        print(f"{colored('Error:', error_color)} Train the Q-table before requesting a move.")
