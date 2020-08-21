@@ -219,7 +219,7 @@ run {colored('snap', command_color)} again to hide the snap shape\n{' '*31}\
     print(f"- {colored('reset', command_color)}                      \
 - reset the puzzle to a solved state")
 
-    print(f"- {colored('train_Q', command_color)} [{colored('num_episodes', arg_color)}] [{colored('max_moves', arg_color)}] [{colored('learning_rate', arg_color)}] [{colored('discount_factor', arg_color)}] [{colored('exploration_rate', arg_color)}]\n{' '*29}\
+    print(f"- {colored('train_Q', command_color)} [{colored('num_episodes', arg_color)}] [{colored('max_moves', arg_color)}] [{colored('learning_rate', arg_color)}] [{colored('discount_factor', arg_color)}] [{colored('exploration_rate', arg_color)}] [{colored('reuse Q-table', arg_color)}]\n{' '*29}\
 - train the Q-table for the puzzle with the given parameters\n{' '*31}\
 use '{colored('train_Q', command_color)} {colored('0', arg_color)}' to load an existing q_table for the puzzle")
 

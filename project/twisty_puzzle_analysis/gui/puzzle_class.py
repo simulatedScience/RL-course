@@ -289,13 +289,13 @@ class Twisty_Puzzle():
         train the Q-table for the current puzzle
         """
         ai_state, self.ai_color_list = state_for_ai(self.SOLVED_STATE)
-        reward_dict = {"solved":10,
-                       "timeout":-1,
-                       "move":-0.02}
+        reward_dict = {"solved":1000,
+                       "timeout":0,
+                       "move":-1}
         if not hasattr(self, "AI_class"):
-            self.AI_class = puzzle_ai(deepcopy(self.moves), ai_state, reward_dict=reward_dict, name=self.PUZZLE_NAME, keep_Q_table=keep_Q_table)
+            self.ai_q_class = puzzle_ai(deepcopy(self.moves), ai_state, reward_dict=reward_dict, name=self.PUZZLE_NAME, keep_Q_table=keep_Q_table)
         games, self.solved_hist, self.diff_increase, self.explo_rates = \
-            self.AI_class.train_q_learning(reward_dict=reward_dict,
+            self.ai_q_class.train_q_learning(reward_dict=reward_dict,
                                            learning_rate=learning_rate,
                                            discount_factor=discount_factor,
                                            base_exploration_rate=base_exploration_rate,
@@ -309,7 +309,7 @@ class Twisty_Puzzle():
         make one move based on the current Q-table of the AI
         """
         ai_state = self.get_ai_state()
-        ai_move = self.AI_class.choose_Q_action(ai_state)
+        ai_move = self.ai_q_class.choose_Q_action(ai_state)
         self.perform_move(ai_move)
         print(f"made move: {colored(ai_move, arg_color)}")
 
@@ -322,15 +322,15 @@ class Twisty_Puzzle():
         last_moves = []
         for n in range(max_moves):
             ai_state = self.get_ai_state()
-            if self.AI_class.puzzle_solved(ai_state, n, max_moves=max_moves) == "solved":
+            if self.ai_q_class.puzzle_solved(ai_state, n, max_moves=max_moves) == "solved":
                 print(f"solved the puzzle after {colored(str(n), arg_color)} moves:")
                 print(f"{colored(solve_moves[:-1], arg_color)}")
                 break
             if len(set(last_moves[-10:])) == 1:
-                ai_move = self.AI_class.choose_Q_action(tuple(ai_state), exploration_rate=0.5)
+                ai_move = self.ai_q_class.choose_Q_action(tuple(ai_state), exploration_rate=0.5)
                 print("detected loop")
             else:
-                ai_move = self.AI_class.choose_Q_action(tuple(ai_state), exploration_rate=0)
+                ai_move = self.ai_q_class.choose_Q_action(tuple(ai_state), exploration_rate=0)
             last_moves.append(ai_move)
             self.perform_move(ai_move)
             solve_moves += ai_move + ' '

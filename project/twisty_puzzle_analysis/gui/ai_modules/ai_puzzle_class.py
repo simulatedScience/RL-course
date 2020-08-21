@@ -6,7 +6,8 @@ from .twisty_puzzle_model import scramble, perform_action
 
 class puzzle_ai():
     def __init__(self, 
-                 ACTIONS_DICT,SOLVED_STATE,
+                 ACTIONS_DICT,
+                 SOLVED_STATE,
                  reward_dict={"solved":10, "timeout":-1, "move":-0.2},
                  name="twisty_puzzle #0",
                  learning_rate=0.02,
@@ -14,7 +15,7 @@ class puzzle_ai():
                  base_exploration_rate=0.7,
                  keep_Q_table=True):
         """
-        initialize a puzzle for ai training
+        initialize a puzzle for training via q-learning
 
         inputs:
         -------
@@ -211,7 +212,7 @@ class puzzle_ai():
             state_history.append(state_tuple)
 
             #choose next action based on an epsilon-greedy strategy with epsilon=exploration_rate
-            action = self.choose_Q_action(state_tuple, exploration_rate=exploration_rate**n_moves)
+            action = self.choose_Q_action(state_tuple, exploration_rate=exploration_rate**(n_moves+1))
             action_history.append(action)
 
             if len(state_history) > 1:
